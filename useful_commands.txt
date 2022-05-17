@@ -1,0 +1,4 @@
+apt-get install esptool ili pip install esptool
+esptool.py --chip esp32 --port /dev/ttyUSB0 erase_flash ili python3 -m esptool
+python3 -m esptool --chip esp32 -p /dev/ttyUSB0 --baud 460800 write_flash -z 0x1000 FER/IOT/esp32-20220117-v1.18.bin
+

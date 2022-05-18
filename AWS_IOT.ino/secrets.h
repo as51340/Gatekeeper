@@ -3,8 +3,8 @@
 
 const char THINGNAME[] = "MyNewESP32";
 
-const char WIFI_SSID[] = "GalaxyA21sCC42";
-const char WIFI_PASSWORD[] = "ebfo8091";
+const char WIFI_SSID[] = "Galaxy A7136D1";
+const char WIFI_PASSWORD[] = "opyi1339";
 const char AWS_IOT_ENDPOINT[] = "a2mr3kdz48c7g8-ats.iot.eu-central-1.amazonaws.com";
 
 const char AWS_CERT_CA[] PROGMEM = R"EOF(

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/MobileAppIoT.iml" filepath="$PROJECT_DIR$/.idea/modules/MobileAppIoT.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/MobileAppIoT.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/MobileAppIoT.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/MobileAppIoT.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/MobileAppIoT.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/MobileAppIoT.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/MobileAppIoT.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/MobileAppIoT.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/MobileAppIoT.app.unitTest.iml" />
+    </modules>
+  </component>
+</project>

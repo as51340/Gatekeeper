@@ -1,5 +1,7 @@
 
 #include "secrets.h"
+#include "buzzer.h"
+#include "sensor.h"
 
 #include <WiFiClientSecure.h>
 #include <MQTTClient.h> //MQTT Library Source: https://github.com/256dpi/arduino-mqtt
@@ -8,7 +10,8 @@
 
 // MQTT topics for the device
 #define AWS_IOT_PUBLISH_TOPIC   "sensor/esp32"
-#define AWS_IOT_SUBSCRIBE_TOPIC "actuator/esp32"
+#define AWS_IOT_SUBSCRIBE_TOPIC "actuator/esp32/data"
+#define AWS_IOT_DISABLE_TOPIC   "actuator/esp32/mode"
 
 WiFiClientSecure wifi_client = WiFiClientSecure();
 MQTTClient mqtt_client = MQTTClient(256); //256 indicates the maximum size for packets being published and received.
@@ -26,6 +29,10 @@ extern const char AWS_CERT_CRT[] PROGMEM;
 
 // Device Private Key
 extern const char AWS_CERT_PRIVATE[] PROGMEM;
+
+enum state{listening, ringing, standby};
+
+static state current_state = listening;
 
 void connectAWS()
 {
@@ -69,22 +76,23 @@ void connectAWS()
 
   //Subscribe to a topic
   mqtt_client.subscribe(AWS_IOT_SUBSCRIBE_TOPIC);
+  mqtt_client.subscribe(AWS_IOT_DISABLE_TOPIC);
 
   Serial.println("AWS IoT Connected!");
 }
 
-void publishMessage()
+void publishMessage(String topic, String msg)
 {
   //Create a JSON document of size 200 bytes, and populate it
   //See https://arduinojson.org/
   StaticJsonDocument<200> doc;
   doc["elapsed_time"] = millis() - t1;
-  doc["value"] = random(1000);
+  doc["value"] = msg;
   char jsonBuffer[512];
   serializeJson(doc, jsonBuffer); // print to mqtt_client
 
   //Publish to the topic
-  mqtt_client.publish(AWS_IOT_PUBLISH_TOPIC, jsonBuffer);
+  mqtt_client.publish(topic, jsonBuffer);
   Serial.println("Sent a message");
 }
 
@@ -92,6 +100,49 @@ void incomingMessageHandler(String &topic, String &payload) {
   Serial.println("Message received!");
   Serial.println("Topic: " + topic);
   Serial.println("Payload: " + payload);
+
+  // deserialise payload
+  StaticJsonDocument<200> doc;
+  deserializeJson(doc, payload);
+
+  String msg = doc["message"];
+
+
+  switch(current_state)
+  {
+    case listening:
+      if (topic == AWS_IOT_SUBSCRIBE_TOPIC && msg == "trigger")
+      {
+        current_state = ringing;
+      }
+      else
+      {
+        if (msg == "disable")
+        {
+          current_state = standby;
+        }
+      }
+      break;
+    case ringing:
+      if (topic == AWS_IOT_SUBSCRIBE_TOPIC && msg == "acknowledge")
+      {
+        current_state = listening;
+      }
+      else
+      {
+        if (msg == "disable")
+        {
+          current_state = standby;
+        }
+      }
+      break;
+    case standby:
+      if (topic == AWS_IOT_DISABLE_TOPIC && msg == "enable")
+      {
+        current_state = listening;
+      }
+      break;
+  }
 
   //  StaticJsonDocument<200> doc;
   //  deserializeJson(doc, payload);
@@ -102,11 +153,26 @@ void setup() {
   Serial.begin(115200);
   t1 = millis();
   connectAWS();
+  buzzer_setup();
+  sensor_setup();
   Serial.println("Setup finished...");
 }
 
 void loop() {
-  publishMessage();
   mqtt_client.loop();
-  delay(4000);
+  switch (current_state)
+  {
+    case listening:
+      if (sensor_loop())
+      {
+        publishMessage(AWS_IOT_PUBLISH_TOPIC, "trigger");
+      }
+      break;
+    case ringing:
+      buzzer_loop();
+      break;
+    case standby:
+      delay(500);
+      break;
+  }
 }

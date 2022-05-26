@@ -6,21 +6,20 @@
 // Tested on 17 September 2019
 // ---------------------------------------------------------------- //
 
-const int echoPin = 27; // attach pin D2 Arduino to pin Echo of HC-SR04
-const int trigPin = 14; //attach pin D3 Arduino to pin Trig of HC-SR04
+const int echoPin = 24; // attach pin D2 Arduino to pin Echo of HC-SR04
+const int trigPin = 25; //attach pin D3 Arduino to pin Trig of HC-SR04
 
 // defines variables
 long duration; // variable for the duration of sound wave travel
 int distance; // variable for the distance measurement
 
-void setup() {
+void sensor_setup() {
   pinMode(trigPin, OUTPUT); // Sets the trigPin as an OUTPUT
   pinMode(echoPin, INPUT); // Sets the echoPin as an INPUT
-  Serial.begin(9600); // // Serial Communication is starting with 9600 of baudrate speed
   Serial.println("Ultrasonic Sensor HC-SR04 Test"); // print some text in Serial Monitor
   Serial.println("with Arduino UNO R3");
 }
-void loop() {
+int sensor_loop() {
   // Clears the trigPin condition
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
@@ -36,5 +35,9 @@ void loop() {
   Serial.print("Distance: ");
   Serial.print(distance);
   Serial.println(" cm");
-  delayMicroseconds(500000);
+  delay(500);
+
+  /* TODO: ADD LOGIC FOR RETURNING 1 */
+
+  return 0;
 }

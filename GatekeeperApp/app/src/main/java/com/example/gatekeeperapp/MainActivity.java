@@ -1,6 +1,9 @@
 package com.example.gatekeeperapp;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
+
+import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.Document;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -17,6 +20,12 @@ import com.example.gatekeeperapp.databinding.ActivityMainBinding;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.os.AsyncTask;
+
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,34 +52,35 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+      /*  GetAllItemsAsyncTask g = new  GetAllItemsAsyncTask();
+        try {
+            g.get();
+            System.out.println("Here");
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+    private class GetAllItemsAsyncTask extends AsyncTask<Void, Void, List<Document>> {
+        @Override
+        protected List<Document> doInBackground(Void... params) {
+            DatabaseAccess databaseAccess = DatabaseAccess.getInstance(MainActivity.this);
+            System.out.println("tuuuu");
+            return databaseAccess.getAllMemos();
         }
 
-        return super.onOptionsItemSelected(item);
+        @Override
+        protected void onPostExecute(List<Document> documents) {
+            if (documents != null) {
+               // populateMemoList(documents);
+            }
+        }
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-        return NavigationUI.navigateUp(navController, appBarConfiguration)
-                || super.onSupportNavigateUp();
-    }
+
+
 }

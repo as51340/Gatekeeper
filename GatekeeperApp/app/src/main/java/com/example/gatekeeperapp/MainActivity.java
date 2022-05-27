@@ -69,8 +69,9 @@ public class MainActivity extends AppCompatActivity {
     private class GetAllItemsAsyncTask extends AsyncTask<Void, Void, List<Document>> {
         @Override
         protected List<Document> doInBackground(Void... params) {
-            DatabaseAccess databaseAccess = DatabaseAccess.getInstance(MainActivity.this);
-            return databaseAccess.getAllMemos();
+           DatabaseAccess databaseAccess = DatabaseAccess.getInstance(MainActivity.this);
+           return databaseAccess.getAllMemos();
+
         }
 
         @Override

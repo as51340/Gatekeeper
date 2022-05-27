@@ -69,13 +69,14 @@ public class DatabaseAccess {
 
         // Create a new credentials provider
         credentialsProvider = new CognitoCachingCredentialsProvider(context, COGNITO_POOL_ID, COGNITO_REGION);
-       // Log.d("AA", "cbddh");
-        // Create a connection to the DynamoDB service
+        Log.d("AA", "cbddh");
+
         dbClient = new AmazonDynamoDBClient(credentialsProvider);
-        Log.d("Ispis", dbTable.getTableName().toString());
+        Log.d("BBBB", "b > " + DYNAMODB_TABLE);
         // Create a table reference
         dbTable = Table.loadTable(dbClient, DYNAMODB_TABLE);
-        Log.d("Ispis3", "cbddh");
+        Log.d("CC", "cbddh");
+
 
     }
 

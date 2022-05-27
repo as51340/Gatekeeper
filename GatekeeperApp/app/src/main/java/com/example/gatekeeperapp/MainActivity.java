@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected List<Document> doInBackground(Void... params) {
             DatabaseAccess databaseAccess = DatabaseAccess.getInstance(MainActivity.this);
-            System.out.println("tuuuu");
             return databaseAccess.getAllMemos();
         }
 
@@ -80,6 +79,17 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    /**
+     * Lifecycle method - called when the app is resumed (including the first-time start)
+     */
+   @Override
+    protected void onResume() {
+        super.onResume();
+        GetAllItemsAsyncTask task = new GetAllItemsAsyncTask();
+        task.execute();
+    }
+
 
 
 

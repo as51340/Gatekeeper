@@ -9,6 +9,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.View;
 
 import androidx.navigation.NavController;
@@ -88,7 +89,9 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         GetAllItemsAsyncTask task = new GetAllItemsAsyncTask();
         task.execute();
-    }
+        Log.d("jj", "hdi");
+
+   }
 
 
 

@@ -1,6 +1,8 @@
 package com.example.gatekeeperapp;
 
 import android.content.Context;
+import android.util.Log;
+
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.UpdateItemOperationConfig;
 import com.amazonaws.regions.Regions;
@@ -19,7 +21,7 @@ public class DatabaseAccess {
     /**
      * The Amazon Cognito POOL_ID to use for authentication and authorization.
      */
-    private final String COGNITO_POOL_ID = "gatekeeper-id-pool";
+    private final String COGNITO_POOL_ID = "eu-central-1:e07cf9c2-0378-47ae-9036-448cd8936256";
 
     /**
      * The AWS Region that corresponds to the POOL_ID above
@@ -31,7 +33,7 @@ public class DatabaseAccess {
      * that this is the "long name" of the table, as specified in the Resources section of
      * the console.  This should be defined with the Notes schema.
      */
-    private final String DYNAMODB_TABLE = "REPLACEME";
+    private final String DYNAMODB_TABLE = "wx_data";
 
     /**
      * The Android calling context
@@ -67,12 +69,14 @@ public class DatabaseAccess {
 
         // Create a new credentials provider
         credentialsProvider = new CognitoCachingCredentialsProvider(context, COGNITO_POOL_ID, COGNITO_REGION);
-
+       // Log.d("AA", "cbddh");
         // Create a connection to the DynamoDB service
         dbClient = new AmazonDynamoDBClient(credentialsProvider);
-
+        Log.d("Ispis", dbTable.getTableName().toString());
         // Create a table reference
         dbTable = Table.loadTable(dbClient, DYNAMODB_TABLE);
+        Log.d("Ispis3", "cbddh");
+
     }
 
     /**
@@ -99,8 +103,12 @@ public class DatabaseAccess {
         if (!memo.containsKey("creationDate")) {
             memo.put("creationDate", System.currentTimeMillis());
         }
+
         dbTable.putItem(memo);
+
     }
+
+
 
     /**
      * Update an existing memo in the database

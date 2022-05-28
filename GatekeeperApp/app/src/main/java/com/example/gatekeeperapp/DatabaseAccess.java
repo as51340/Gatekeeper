@@ -11,11 +11,14 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.Table;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.Document;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.Primitive;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ReturnValue;
+import com.amazonaws.services.dynamodbv2.model.ScanRequest;
+import com.amazonaws.services.dynamodbv2.model.ScanResult;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
-
 
 public class DatabaseAccess {
 
@@ -28,6 +31,8 @@ public class DatabaseAccess {
      * The AWS Region that corresponds to the POOL_ID above
      */
     private final Regions COGNITO_REGION = Regions.EU_CENTRAL_1;;
+
+
 
     /**
      * The name of the DynamoDB table used to store data.  If using AWS Mobile Hub, then note
@@ -61,6 +66,8 @@ public class DatabaseAccess {
      */
     private static volatile DatabaseAccess instance;
 
+
+     ;
     /**
      * Creates a new DatabaseAccess instance.
      * @param context the calling context
@@ -73,14 +80,21 @@ public class DatabaseAccess {
         Log.d("AA", "cbddh");
 
         dbClient = new AmazonDynamoDBClient(credentialsProvider);
-        Log.d("BBBB", "endpoint > " + dbClient.getEndpoint());
+        Log.d("BBBB", "db client > ");
         // Create a table reference
 
         dbClient.setRegion(Region.getRegion(Regions.EU_CENTRAL_1));
+
+
+
         dbTable = Table.loadTable(dbClient, DYNAMODB_TABLE);
         Log.d("CC", "cbddh");
 
 
+    }
+
+    public AmazonDynamoDBClient getDbClient() {
+        return dbClient;
     }
 
     /**

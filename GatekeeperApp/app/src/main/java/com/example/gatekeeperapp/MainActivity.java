@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private class GetAllItemsAsyncTask extends AsyncTask<Void, Void, List<Document>> {
         @Override
         protected List<Document> doInBackground(Void... params) {
+            Log.d("a", "access");
            DatabaseAccess databaseAccess = DatabaseAccess.getInstance(MainActivity.this);
            return databaseAccess.getAllMemos();
 
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(List<Document> documents) {
             if (documents != null) {
                // populateMemoList(documents);
+                Log.d("posrt", "pporukaZaPost");
             }
         }
     }

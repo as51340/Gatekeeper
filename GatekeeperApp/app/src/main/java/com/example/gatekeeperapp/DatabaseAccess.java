@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.UpdateItemOperationConfig;
+import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.Table;
@@ -72,8 +73,10 @@ public class DatabaseAccess {
         Log.d("AA", "cbddh");
 
         dbClient = new AmazonDynamoDBClient(credentialsProvider);
-        Log.d("BBBB", "b > " + DYNAMODB_TABLE);
+        Log.d("BBBB", "endpoint > " + dbClient.getEndpoint());
         // Create a table reference
+
+        dbClient.setRegion(Region.getRegion(Regions.EU_CENTRAL_1));
         dbTable = Table.loadTable(dbClient, DYNAMODB_TABLE);
         Log.d("CC", "cbddh");
 

@@ -1,25 +1,38 @@
 package com.example.gatekeeperapp;
 
+import android.content.ClipData;
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.dynamodbv2.document.PutItemOperationConfig;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.UpdateItemOperationConfig;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.internal.KeyDescription;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.Table;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.Document;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.Primitive;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.GetItemRequest;
+import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
+import com.amazonaws.services.dynamodbv2.model.PutItemResult;
 import com.amazonaws.services.dynamodbv2.model.ReturnValue;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.amazonaws.services.dynamodbv2.model.ScanResult;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 
@@ -29,9 +42,6 @@ import java.util.UUID;
 *   2. kako napraviti izmjene nad postojećim podacima
 *
 * */
-
-
-
 
 public class DatabaseAccess {
 
@@ -44,8 +54,6 @@ public class DatabaseAccess {
      * The AWS Region that corresponds to the POOL_ID above
      */
     private final Regions COGNITO_REGION = Regions.EU_CENTRAL_1;
-
-
 
     /**
      * The name of the DynamoDB table used to store data.  If using AWS Mobile Hub, then note
@@ -79,7 +87,6 @@ public class DatabaseAccess {
      */
     private static volatile DatabaseAccess instance;
 
-
      ;
     /**
      * Creates a new DatabaseAccess instance.
@@ -89,6 +96,7 @@ public class DatabaseAccess {
         this.context = context;
 
         // Create a new credentials provider
+
         credentialsProvider = new CognitoCachingCredentialsProvider(context, COGNITO_POOL_ID, COGNITO_REGION);
         Log.d("DynamoDB_fail_test", "a");
 
@@ -100,11 +108,9 @@ public class DatabaseAccess {
 
         dbClient.setRegion(Region.getRegion(Regions.EU_CENTRAL_1));
 
-
-
         dbTable = Table.loadTable(dbClient, DYNAMODB_TABLE);
-        Log.d("DynamoDB_fail_test", "cbddh");
 
+        Log.d("DynamoDB_fail_test", "yes");
 
     }
 
@@ -124,11 +130,18 @@ public class DatabaseAccess {
 
     /**
      * create a new alarm in the database
-     * @param alarm the alarm to create
+
      */
-    public void create(Document alarm) {
-        alarm.put("sample_time", "1221"); //  TODO : ovo ne radi :D nabadala sam
-        dbTable.putItem(alarm);
+    public void create() {
+
+
+        Document d= new Document();
+        d.put("sample_time", 4848);
+        d.put("device_data",111);
+        dbTable.putItem(d);
+
+
+
 
     }
 
@@ -163,17 +176,24 @@ public class DatabaseAccess {
      * Retrieve all the alarms from the database
      * @return the list of alarms
      */
+
     public Map<String, KeyDescription> getAllMemos() {   //TODO: ovdje sam uređivala kod s ciljem da pokupi iz baze bilošto
+
         Map<String, KeyDescription> fml = dbTable.getKeys();
-        Log.d("DynamoDB_fail_test-RES", String.valueOf(fml));
-        Document memo= new Document();
-        memo.put("sample_time",78878);  // TODO: tu sam htjela nešto umetnuti u bazu ali neuspješno, treba proguglati
-        memo.put("device_data", "1221");
-        dbTable.putItem(memo);
+
+        create();
+        ScanRequest scanRequest = new ScanRequest().withTableName(DYNAMODB_TABLE);
+        ScanResult result = getDbClient().scan(scanRequest);
+
+
+        for (Map<String, AttributeValue> item : result.getItems()){
+            Log.d("Items_in_dbTable " , item.toString());
+        }
+
+
+
         return fml;
     }
-
-
 
 
 

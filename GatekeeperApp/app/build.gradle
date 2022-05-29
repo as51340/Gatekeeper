@@ -41,6 +41,7 @@ dependencies {
     implementation 'com.amazonaws:aws-android-sdk-core:2.6.+'
     implementation 'com.amazonaws:aws-android-sdk-ddb:2.6.+'
     implementation 'com.amazonaws:aws-android-sdk-ddb-document:2.6.+'
+    implementation 'com.amazonaws:aws-android-sdk-autoscaling:2.16.13'
     implementation 'com.jakewharton:butterknife:8.4.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     implementation fileTree(dir: 'libs', include: ['*.jar'])

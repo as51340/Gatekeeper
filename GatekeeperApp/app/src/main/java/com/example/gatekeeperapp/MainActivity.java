@@ -1,11 +1,18 @@
 package com.example.gatekeeperapp;
 
+import android.content.ClipData;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import com.amazonaws.auth.policy.actions.AutoScalingActions;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.Document;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.document.internal.KeyDescription;
+import com.amazonaws.services.autoscaling.model.AutoScalingGroup;
+import com.amazonaws.services.autoscaling.model.DescribeAutoScalingGroupsResult;
+import com.amazonaws.services.autoscaling.model.Instance;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +31,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.os.AsyncTask;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -56,24 +66,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-      /*  GetAllItemsAsyncTask g = new  GetAllItemsAsyncTask();
-        try {
-            g.get();
-            System.out.println("Here");
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
     }
-
 
     private class GetAllItemsAsyncTask extends AsyncTask<Void, Void,  Map<String, KeyDescription>> {
         @Override
         protected Map<String, KeyDescription> doInBackground(Void... params) {
             Log.d("DynamoDB_fail_test", "access");
-           DatabaseAccess databaseAccess = DatabaseAccess.getInstance(MainActivity.this);
-           return databaseAccess.getAllMemos();
+            DatabaseAccess databaseAccess = DatabaseAccess.getInstance(MainActivity.this);
+
+          //  Log.d("All_memos", databaseAccess.getAllMemos().toString());
+
+            return databaseAccess.getAllMemos();
 
         }
 
@@ -95,10 +98,6 @@ public class MainActivity extends AppCompatActivity {
         GetAllItemsAsyncTask task = new GetAllItemsAsyncTask();
         task.execute();
         Log.d("jj", "hdi");
-
    }
-
-
-
 
 }

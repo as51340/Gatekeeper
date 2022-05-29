@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.Document;
 
+import com.amazonaws.mobileconnectors.dynamodbv2.document.internal.KeyDescription;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +25,7 @@ import android.view.MenuItem;
 import android.os.AsyncTask;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
@@ -66,20 +68,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private class GetAllItemsAsyncTask extends AsyncTask<Void, Void, List<Document>> {
+    private class GetAllItemsAsyncTask extends AsyncTask<Void, Void,  Map<String, KeyDescription>> {
         @Override
-        protected List<Document> doInBackground(Void... params) {
-            Log.d("a", "access");
+        protected Map<String, KeyDescription> doInBackground(Void... params) {
+            Log.d("DynamoDB_fail_test", "access");
            DatabaseAccess databaseAccess = DatabaseAccess.getInstance(MainActivity.this);
            return databaseAccess.getAllMemos();
 
         }
 
         @Override
-        protected void onPostExecute(List<Document> documents) {
+        protected void onPostExecute( Map<String, KeyDescription> documents) {
             if (documents != null) {
                // populateMemoList(documents);
-                Log.d("posrt", "pporukaZaPost");
+                Log.d("post", "pporukaZaPost");
             }
         }
     }

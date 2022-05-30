@@ -43,6 +43,15 @@ dependencies {
     implementation 'com.amazonaws:aws-android-sdk-ddb-document:2.6.+'
     implementation 'com.amazonaws:aws-android-sdk-autoscaling:2.16.13'
     implementation 'com.jakewharton:butterknife:8.4.0'
+    implementation 'com.amazonaws:aws-android-sdk-iot:2.6.+'
+
+    // https://mvnrepository.com/artifact/software.amazon.awssdk/http-client-spi
+    implementation group: 'software.amazon.awssdk', name: 'http-client-spi', version: '2.10.37'
+
+    implementation group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.0.002'
+//Thanks for using https://jar-download.com
+
+
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation 'junit:junit:4.13.2'

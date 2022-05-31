@@ -44,11 +44,8 @@ dependencies {
     implementation 'com.amazonaws:aws-android-sdk-autoscaling:2.16.13'
     implementation 'com.jakewharton:butterknife:8.4.0'
     implementation 'com.amazonaws:aws-android-sdk-iot:2.6.+'
-
-
-
-
-
+    implementation "androidx.fragment:fragment:1.2.5"
+    
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation 'junit:junit:4.13.2'

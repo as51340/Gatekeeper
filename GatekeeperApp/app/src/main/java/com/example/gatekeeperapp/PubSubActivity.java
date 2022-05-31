@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.iot.AWSIotKeystoreHelper;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttClientStatusCallback;
@@ -26,7 +28,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.KeyStore;
 import java.util.UUID;
 
-public class PubSubActivity extends Activity {
+public class PubSubActivity extends AppCompatActivity {
 
     static final String LOG_TAG = PubSubActivity.class.getCanonicalName();
 
@@ -82,7 +84,7 @@ public class PubSubActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-     /*   txtSubcribe = (EditText) findViewById(R.id.txtSubcribe);
+        txtSubcribe = (EditText) findViewById(R.id.txtSubcribe);
         txtTopic = (EditText) findViewById(R.id.txtTopic);
         txtMessage = (EditText) findViewById(R.id.txtMessage);
 
@@ -101,7 +103,7 @@ public class PubSubActivity extends Activity {
         btnPublish.setOnClickListener(publishClick);
 
         btnDisconnect = (Button) findViewById(R.id.btnDisconnect);
-        btnDisconnect.setOnClickListener(disconnectClick); */
+        btnDisconnect.setOnClickListener(disconnectClick);
 
         // MQTT client IDs are required to be unique per AWS IoT account.
         // This UUID is "practically unique" but does not _guarantee_

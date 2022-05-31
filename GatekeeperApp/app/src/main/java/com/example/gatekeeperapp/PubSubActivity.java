@@ -40,7 +40,7 @@ public class PubSubActivity extends AppCompatActivity {
     private static final String CUSTOMER_SPECIFIC_ENDPOINT = "a2mr3kdz48c7g8-ats.iot.eu-central-1.amazonaws.com";;
     // Cognito pool ID. For this app, pool needs to be unauthenticated pool with
     // AWS IoT permissions.
-    private static final String COGNITO_POOL_ID = "eu-central-1:9426c50a-6fa8-4bbc-951a-c09c395122cd";;
+    private static final String COGNITO_POOL_ID =  "eu-central-1:9426c50a-6fa8-4bbc-951a-c09c395122cd";
     // Name of the AWS IoT policy to attach to a newly created certificate
     private static final String AWS_IOT_POLICY_NAME = "Esp32Policy";;
 
@@ -108,8 +108,9 @@ public class PubSubActivity extends AppCompatActivity {
         // MQTT client IDs are required to be unique per AWS IoT account.
         // This UUID is "practically unique" but does not _guarantee_
         // uniqueness.
-        Log.d("Man", "hdij");
+        Log.d("Test_PUB/SUB", "test1");
         clientId = UUID.randomUUID().toString();
+        Log.d("Test_PUB/SUB", "Client Id: " + clientId);
         tvClientId.setText(clientId);
 
 
@@ -144,6 +145,7 @@ public class PubSubActivity extends AppCompatActivity {
         mIotAndroidClient.setRegion(region);
 
         keystorePath = getFilesDir().getPath();
+        Log.d("KeystorePath", keystorePath);
         keystoreName = KEYSTORE_NAME;
         keystorePassword = KEYSTORE_PASSWORD;
         certificateId = CERTIFICATE_ID;

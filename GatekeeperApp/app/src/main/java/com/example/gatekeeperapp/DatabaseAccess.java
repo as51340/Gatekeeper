@@ -36,12 +36,6 @@ import java.util.Set;
 import java.util.UUID;
 
 
-/*
-* TODO:
-*   1. kako napraviti query da se izvuku potrebni podaci
-*   2. kako napraviti izmjene nad postojećim podacima
-*
-* */
 
 public class DatabaseAccess {
 
@@ -145,8 +139,6 @@ public class DatabaseAccess {
 
     }
 
-
-
     /**
      * Update an existing memo in the database
      * @param memo the memo to save
@@ -177,7 +169,7 @@ public class DatabaseAccess {
      * @return the list of alarms
      */
 
-    public Map<String, KeyDescription> getAllMemos() {   //TODO: ovdje sam uređivala kod s ciljem da pokupi iz baze bilošto
+    public Map<String, KeyDescription> getAllMemos() {
 
         Map<String, KeyDescription> fml = dbTable.getKeys();
 

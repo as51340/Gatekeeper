@@ -9,11 +9,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7a0337be-bcff-4417-a871-e83c08ba906b" name="Changes" comment="Trying to get data from wx_data table">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webapp/webapp/src/components/AWSFunctions.js" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/webapp/src/components/AWSFunctions.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webapp/webapp/src/components/DBData.js" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/webapp/src/components/DBData.js" afterDir="false" />
-    </list>
+    <list default="true" id="7a0337be-bcff-4417-a871-e83c08ba906b" name="Changes" comment="Fetched data from wx_data" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -138,7 +134,7 @@
       <workItem from="1654075897082" duration="304000" />
       <workItem from="1654076225008" duration="577000" />
       <workItem from="1654076831815" duration="6903000" />
-      <workItem from="1654105408926" duration="3353000" />
+      <workItem from="1654105408926" duration="3691000" />
     </task>
     <task id="LOCAL-00001" summary="Webapp directory set up">
       <created>1654077317065</created>
@@ -161,7 +157,14 @@
       <option name="project" value="LOCAL" />
       <updated>1654083769836</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Fetched data from wx_data">
+      <created>1654109053620</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1654109053620</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -182,6 +185,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Webapp directory set up" />
     <MESSAGE value="Trying to get data from wx_data table" />
-    <option name="LAST_COMMIT_MESSAGE" value="Trying to get data from wx_data table" />
+    <MESSAGE value="Fetched data from wx_data" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fetched data from wx_data" />
   </component>
 </project>

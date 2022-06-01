@@ -108,8 +108,11 @@ public class PubSubActivity extends AppCompatActivity {
         // MQTT client IDs are required to be unique per AWS IoT account.
         // This UUID is "practically unique" but does not _guarantee_
         // uniqueness.
+
+
         Log.d("Test_PUB/SUB", "test1");
-        clientId = UUID.randomUUID().toString();
+        //clientId = UUID.randomUUID().toString();
+        clientId = "MyNewESP32";
         Log.d("Test_PUB/SUB", "Client Id: " + clientId);
         tvClientId.setText(clientId);
 
@@ -126,7 +129,7 @@ public class PubSubActivity extends AppCompatActivity {
 
         // MQTT Client
         mqttManager = new AWSIotMqttManager(clientId, CUSTOMER_SPECIFIC_ENDPOINT);
-
+        mqttManager.setAutoReconnect(false);
 
         // Set keepalive to 10 seconds.  Will recognize disconnects more quickly but will also send
         // MQTT pings every 10 seconds.
@@ -135,9 +138,9 @@ public class PubSubActivity extends AppCompatActivity {
 
         // Set Last Will and Testament for MQTT.  On an unclean disconnect (loss of connection)
         // AWS IoT will publish this message to alert other clients.
-        AWSIotMqttLastWillAndTestament lwt = new AWSIotMqttLastWillAndTestament("my/lwt/topic",
-                "Android client lost connection", AWSIotMqttQos.QOS0);
-        mqttManager.setMqttLastWillAndTestament(lwt);
+      //  AWSIotMqttLastWillAndTestament lwt = new AWSIotMqttLastWillAndTestament("my/lwt/topic",
+           //     "Android client lost connection", AWSIotMqttQos.QOS0);
+       // mqttManager.setMqttLastWillAndTestament(lwt);
 
 
         // IoT Client (for creation of certificate if needed)

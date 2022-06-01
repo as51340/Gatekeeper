@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Gradle: com.amazonaws:aws-android-sdk-autoscaling:2.16.13">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../../../Projekt/Gatekeeper/caches/modules-2/files-2.1/com.amazonaws/aws-android-sdk-autoscaling/2.16.13/5f52ae77772c0faf8af66987c44d31f8f9b836e0/aws-android-sdk-autoscaling-2.16.13.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../../../Projekt/Gatekeeper/caches/modules-2/files-2.1/com.amazonaws/aws-android-sdk-autoscaling/2.16.13/85feec00180adae27ea9f7dd69d2473d2a5f85ea/aws-android-sdk-autoscaling-2.16.13-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../../Projekt/Gatekeeper/caches/modules-2/files-2.1/com.amazonaws/aws-android-sdk-autoscaling/2.16.13/cfdb5245b6b8d23c30183f7ff0bbf12ecdbee2df/aws-android-sdk-autoscaling-2.16.13-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_activity);
 
 
-        clientId =  "MyNewESP32";
+        clientId =  "MobApp";
         topicData = "actuator/esp32/data";
         topicMode = "actuator/esp32/mode";
 
@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private void publish(String topic, String msg){
+        Log.d(LOG_TAG, "*********************************************************8");
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("data",1);
@@ -150,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
             StringBuffer stringBuffer= new StringBuffer();
             stringBuffer.append(" success ");
             //mqttManager.publishData(jsonObject.toString().getBytes(StandardCharsets.UTF_8), topic, AWSIotMqttQos.QOS0,callback,stringBuffer);
-            mqttManager.publishString("hellllllllllooooooo", "loptica/hh", AWSIotMqttQos.QOS1,callback,stringBuffer);
+            mqttManager.publishString(msg, topicData, AWSIotMqttQos.QOS1,callback,stringBuffer);
         } catch (Exception e) {
             Log.d(LOG_TAG, "Publish error.", e);
         }
@@ -201,12 +202,11 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (status == AWSIotMqttClientStatusCallback.AWSIotMqttClientStatus.Connected) {
+                            System.out.println("Hi hih ihiiihih");
                             Log.d("d_tag", "Connected");
-                            //subscribe(topicData);
-                            publish(topicData, "none");
-
-
-
+                            subscribe(topicData);
+                            String messageToSend = "{ \"message\": \"shitHappens\"} ";;
+                            publish(topicData, messageToSend);
                         } else if (status == AWSIotMqttClientStatusCallback.AWSIotMqttClientStatus.Reconnecting) {
                             if (throwable != null) {
                                 Log.d(d_tag, "Connection error.", throwable);

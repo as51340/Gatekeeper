@@ -47,9 +47,9 @@ const DBData = () => {
             {data?.Items.map((item) => (
                 <div key={item.sample_time}>
 
-                    {new Date(item.sample_time).toString()}
+                    {new Date(item.sample_time).toUTCString().split(' ').slice(0, 5).join(' ')}
 
-                    <span> </span>
+                    <span>  </span>
 
                     {JSON.stringify(item.message)!= undefined ?
 

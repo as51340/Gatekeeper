@@ -51,7 +51,23 @@ const DBData = () => {
 
                     <span> </span>
 
-                    {JSON.stringify(item.message)}
+                    {JSON.stringify(item.message)!= undefined ?
+
+                        <span>
+
+                            {JSON.stringify(item.message).includes("nontriggered") ?
+                                <span> OFF </span> :
+
+                                <span> ON </span>
+                            }
+
+                        </span>
+
+
+                        :
+
+                        <span> </span>
+                    }
 
 
                 </div>

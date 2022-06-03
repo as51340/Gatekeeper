@@ -6,7 +6,6 @@ import * as AWS from 'aws-sdk';
 const DBData = () => {
     const [data, setData] = useState();
 
-    const panj = ["da","da","da","da","da","da"]
 
     const docClient = new AWS.DynamoDB.DocumentClient({
         region: "eu-central-1",

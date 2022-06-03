@@ -47,7 +47,7 @@ const DBData = () => {
             {data?.Items.map((item) => (
                 <div key={item.sample_time}>
 
-                    {item.sample_time}
+                    {new Date(item.sample_time).toString()}
 
                     <span> </span>
 
@@ -56,6 +56,7 @@ const DBData = () => {
                         <span>
 
                             {JSON.stringify(item.message).includes("nontriggered") ?
+
                                 <span> OFF </span> :
 
                                 <span> ON </span>

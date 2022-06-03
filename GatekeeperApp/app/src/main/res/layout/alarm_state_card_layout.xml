@@ -36,6 +36,7 @@
         android:textSize="20dp"
         android:textStyle="bold"
         android:text="ON"
-        android:textColor="@color/adriatic_blue"
+        android:checked="true"
+        android:textColor="@color/green"
         />
 </RelativeLayout>

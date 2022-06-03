@@ -5,8 +5,10 @@
       <map>
         <entry key="..\:/FER/IoT/ProjektIoT/Gatekeeper/GatekeeperApp/app/src/main/res/layout/activity_main.xml" value="0.1" />
         <entry key="..\:/Users/Dora/Desktop/iot/Gatekeeper/GatekeeperApp/app/src/main/res/drawable/ic_alarm_icon_50.xml" value="0.16" />
+        <entry key="..\:/Users/Dora/Desktop/iot/Gatekeeper/GatekeeperApp/app/src/main/res/drawable/ic_alarm_settings_50.xml" value="0.16" />
         <entry key="..\:/Users/Dora/Desktop/iot/Gatekeeper/GatekeeperApp/app/src/main/res/layout/action_tile.xml" value="0.33" />
         <entry key="..\:/Users/Dora/Desktop/iot/Gatekeeper/GatekeeperApp/app/src/main/res/layout/activity_main.xml" value="0.18085106382978725" />
+        <entry key="..\:/Users/Dora/Desktop/iot/Gatekeeper/GatekeeperApp/app/src/main/res/layout/alarm_state_card_layout.xml" value="0.22010869565217392" />
         <entry key="..\:/Users/Dora/Desktop/iot/Gatekeeper/GatekeeperApp/app/src/main/res/layout/content_main.xml" value="0.5" />
         <entry key="..\:/Users/Dora/Desktop/iot/Gatekeeper/GatekeeperApp/app/src/main/res/layout/fragment_first.xml" value="0.18085106382978725" />
         <entry key="..\:/Users/Dora/Desktop/iot/Gatekeeper/GatekeeperApp/app/src/main/res/layout/fragment_logs_lookup.xml" value="0.18085106382978725" />

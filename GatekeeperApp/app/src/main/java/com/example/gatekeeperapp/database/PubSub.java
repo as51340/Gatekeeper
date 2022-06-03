@@ -1,6 +1,5 @@
-package com.example.gatekeeperapp;
+package com.example.gatekeeperapp.database;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,7 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.iot.AWSIotKeystoreHelper;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttClientStatusCallback;
-import com.amazonaws.mobileconnectors.iot.AWSIotMqttLastWillAndTestament;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttManager;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttNewMessageCallback;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttQos;
@@ -23,14 +21,14 @@ import com.amazonaws.services.iot.AWSIotClient;
 import com.amazonaws.services.iot.model.AttachPrincipalPolicyRequest;
 import com.amazonaws.services.iot.model.CreateKeysAndCertificateRequest;
 import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
+import com.example.gatekeeperapp.R;
 
 import java.io.UnsupportedEncodingException;
 import java.security.KeyStore;
-import java.util.UUID;
 
-public class PubSubActivity extends AppCompatActivity {
+public class PubSub extends AppCompatActivity {
 
-    static final String LOG_TAG = PubSubActivity.class.getCanonicalName();
+    static final String LOG_TAG = PubSub.class.getCanonicalName();
 
 
     // --- Constants to modify per your configuration ---

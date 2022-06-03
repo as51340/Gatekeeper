@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/FirstFragment"
-        android:name="com.example.gatekeeperapp.FirstFragment"
-        android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first">
+        android:name="com.example.gatekeeperapp.ui.login.LoginActivity"
+        android:label="@string/title_activity_login"
+        tools:layout="@layout/activity_login">
 
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"
@@ -17,12 +17,10 @@
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
-        android:name="com.example.gatekeeperapp.SecondFragment"
+        android:name="com.example.gatekeeperapp.MainActivity"
         android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second">
+        tools:layout="@layout/main_activity">
 
-        <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+
     </fragment>
 </navigation>

@@ -1,11 +1,12 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
 
 import * as AWS from 'aws-sdk';
 
-
 const DBData = () => {
     const [data, setData] = useState();
+
+    const panj = ["da","da","da","da","da","da"]
 
     const docClient = new AWS.DynamoDB.DocumentClient({
         region: "eu-central-1",
@@ -15,36 +16,46 @@ const DBData = () => {
     });
 
 
-
-    const fetchDataFromDynamoDb = (tableName) => {
+    useEffect(() =>{
         console.log("Trying to fetch data from database table...");
 
+
         let params = {
-            TableName: tableName,
+            TableName: "wx_data",
         }
 
         docClient.scan(params, function (err, fetchedData) {
             if (!err) {
                 console.log("Fetched data: " + JSON.stringify(fetchedData));
                 JSON.stringify(fetchedData);
-                setData(JSON.stringify(fetchedData));
-                return data
+                setData(fetchedData);
+
+                // return data
             } else {
                 console.log("Err: " + err.message + ", params: " + params.TableName);
             }
 
         });
 
-    }
+    }, []);
 
     return (
         <div className="dbdata">
 
             <div className="message">Gatekeeper App</div>
-            {fetchDataFromDynamoDb("wx_data")}
-            <div className="message">{JSON.stringify(data)}</div>
+
+            {data?.Items.map((item) => (
+                <div key={item.sample_time}>
+
+                    {item.sample_time}
+
+                    <span> </span>
+
+                    {JSON.stringify(item.message)}
 
 
+                </div>
+            ))}
 
         </div>
     );

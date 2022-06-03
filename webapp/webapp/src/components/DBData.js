@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 
 import * as AWS from 'aws-sdk';
 import "./DBData.css";
+import Time from './Time'
 
 const DBData = () => {
     const [data, setData] = useState();
@@ -40,30 +41,29 @@ const DBData = () => {
     }, []);
 
     return (
-        <div className="dbdata">
+        <div className="card">
 
-            <div className="message">Gatekeeper App</div>
+            <div className="title">Gatekeeper App</div>
 
             {data?.Items.map((item) => (
-                <div key={item.sample_time}>
+                <div key={item.sample_time} className="card-wrapper">
 
-                    <span className="card">
+                    <span >
 
-                    {new Date(item.sample_time).toUTCString().split(' ').slice(0, 5).join(' ')}
+                    <Time className="time" alarmDate={ new Date(item.sample_time).toUTCString().split(' ').slice(0, 5).join(' ')}></Time>
 
                     </span>
 
-                    <span>  </span>
 
                     {JSON.stringify(item.message)!= undefined ?
 
-                        <span className="card">
+                        <span className = "alarm-wrapper">
 
                             {JSON.stringify(item.message).includes("nontriggered") ?
 
-                                <span> OFF </span> :
+                                <span className="off"> OFF </span> :
 
-                                <span> ON </span>
+                                <span className="on"> ON </span>
                             }
 
                         </span>
@@ -76,6 +76,7 @@ const DBData = () => {
 
 
                 </div>
+
             ))}
 
         </div>

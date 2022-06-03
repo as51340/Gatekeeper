@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import ReactDOM from 'react-dom';
 
 import * as AWS from 'aws-sdk';
+import "./DBData.css";
 
 const DBData = () => {
     const [data, setData] = useState();
@@ -46,13 +47,17 @@ const DBData = () => {
             {data?.Items.map((item) => (
                 <div key={item.sample_time}>
 
+                    <span className="card">
+
                     {new Date(item.sample_time).toUTCString().split(' ').slice(0, 5).join(' ')}
+
+                    </span>
 
                     <span>  </span>
 
                     {JSON.stringify(item.message)!= undefined ?
 
-                        <span>
+                        <span className="card">
 
                             {JSON.stringify(item.message).includes("nontriggered") ?
 

@@ -34,11 +34,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.util.Map;
-import java.util.Timer;
-import java.util.UUID;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -348,23 +345,25 @@ public class MainActivity extends AppCompatActivity {
      **/
     private void initCards() {
         CardView alarmCard = findViewById(R.id.alarm_state_card);
-        View child1 = LayoutInflater.from(this).inflate(R.layout.action_tile, alarmCard, false);
+        View child1 = LayoutInflater.from(this).inflate(R.layout.alarm_state_card_layout, alarmCard, false);
         alarmCard.addView(child1);
         alarmCard.setOnClickListener(v -> {
             Log.d("MainActivity", String.valueOf(v.getId()==R.id.alarm_state_card));
         });
 
-        CardView regCard = findViewById(R.id.registered_innouts_card);
-        View child2 = LayoutInflater.from(this).inflate(R.layout.action_tile, regCard, false);
-        regCard.addView(child2);
+        CardView settingsCard = findViewById(R.id.alaram_settings_card);
+        View child2 = LayoutInflater.from(this).inflate(R.layout.settings_card_layout, settingsCard, false);
+        settingsCard.addView(child2);
 
-        CardView a = findViewById(R.id.alaram_settings_card);
-        View c = LayoutInflater.from(this).inflate(R.layout.action_tile, a, false);
-        a.addView(c);
 
-        CardView b = findViewById(R.id.logs_card);
-        View d = LayoutInflater.from(this).inflate(R.layout.action_tile, b, false);
-        b.addView(d);
+
+        CardView logsCard = findViewById(R.id.logs_card);
+        View d = LayoutInflater.from(this).inflate(R.layout.logs_card_layout, logsCard, false);
+        logsCard.addView(d);
+
+        CardView websiteCard = findViewById(R.id.website_card);
+        View c = LayoutInflater.from(this).inflate(R.layout.website_card_layout, websiteCard, false);
+        websiteCard.addView(c);
 
 
     }

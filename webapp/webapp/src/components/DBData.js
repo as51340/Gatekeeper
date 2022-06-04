@@ -29,9 +29,12 @@ const DBData = () => {
             if (!err) {
                 console.log("Fetched data: " + JSON.stringify(fetchedData));
                 JSON.stringify(fetchedData);
+
+              fetchedData?.Items.sort(function(a, b){
+                   return a.sample_time-b.sample_time;
+               })
                 setData(fetchedData);
 
-                // return data
             } else {
                 console.log("Err: " + err.message + ", params: " + params.TableName);
             }

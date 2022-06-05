@@ -64,9 +64,9 @@ const DBData = () => {
 
                             {JSON.stringify(item.message).includes("nontriggered") ?
 
-                                <span className="off"> OFF </span> :
+                                <span className="off">  </span> :
 
-                                <span className="on"> ON </span>
+                                <span className="on"> Movement detected </span>
                             }
 
                         </span>

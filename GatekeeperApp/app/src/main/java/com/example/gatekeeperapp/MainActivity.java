@@ -113,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
     String keystorePassword;
     String sensorReadings;
     Integer NUMDETECTED = -1;
+    boolean MUST_PUBLISH = false; //if notification is triggered, first initialise (connect) then publish
 
     TextView numDetectedTV;
 
@@ -130,11 +131,7 @@ public class MainActivity extends AppCompatActivity {
         topicData = "actuator/esp32/data";
         topicMode = "actuator/esp32/mode";
         sensorReadings = "sensor/esp32";
-        Intent current = getIntent();
-        boolean silenceAlarm = current.getBooleanExtra("silenceAlarm",false);
-        if(silenceAlarm){
-            publish(topicData,ALARM_DOWN);
-        }
+
 
         //aws stuff
         init_database();
@@ -155,7 +152,11 @@ public class MainActivity extends AppCompatActivity {
         }
         initCards();
 
-
+        Intent current = getIntent();
+        boolean silenceAlarm = current.getBooleanExtra("silenceAlarm", false);
+        if (silenceAlarm) {
+            MUST_PUBLISH = true;
+        }
         Log.i("ALARM_STATE", ALARM_STATE + String.valueOf(ALARM_STATE_ON));
 
 
@@ -238,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
                                         }
                                         //Detection
                                         if (ALARM_STATE_ON) {
-                                            publish(topicData,ALARM_UP); //trigger alarm
+                                            publish(topicData, ALARM_UP); //trigger alarm
                                             runAlarmNotify();
                                         }
 
@@ -256,7 +257,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-     void init_database() {
+
+    void init_database() {
         // Initialize the AWS Cognito credentials provider
         credentialsProvider = new CognitoCachingCredentialsProvider(
                 getApplicationContext(), // context
@@ -278,6 +280,11 @@ public class MainActivity extends AppCompatActivity {
                         if (status == AWSIotMqttClientStatusCallback.AWSIotMqttClientStatus.Connected) {
                             Log.d("d_tag", "Connected");
                             subscribe(sensorReadings);
+                            if (MUST_PUBLISH) {
+                                publish(topicData,ALARM_DOWN);
+                                MUST_PUBLISH=false;
+
+                            }
 
                         } else if (status == AWSIotMqttClientStatusCallback.AWSIotMqttClientStatus.Reconnecting) {
                             if (throwable != null) {
@@ -434,7 +441,7 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     //user wants alarm on
-                    publish(topicData, ALARM_ON);
+                    publish(topicMode, ALARM_ON);
                     buttonView.setText("ON");
                     buttonView.setTextColor(Color.GREEN);
 
@@ -445,7 +452,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                 } else {
-                    publish(topicData, ALARM_OFF);
+                    publish(topicMode, ALARM_OFF);
                     buttonView.setText("OFF");
                     buttonView.setTextColor(Color.RED);
 
@@ -527,7 +534,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     private void createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
@@ -584,7 +590,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     private class GetAllItemsAsyncTask extends AsyncTask<Void, Void, Integer> {
         @Override
         protected Integer doInBackground(Void... params) {
@@ -596,7 +601,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Integer res) {
             if (res != null) {
-                NUMDETECTED=res;
+                NUMDETECTED = res;
                 numDetectedTV.setText(String.valueOf(NUMDETECTED));
                 Log.d("MainActivity-Logs", "Retrieval success!");
             }

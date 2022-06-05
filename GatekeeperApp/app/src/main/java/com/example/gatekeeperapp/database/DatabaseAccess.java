@@ -4,19 +4,26 @@ import android.content.Context;
 import android.util.Log;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
-import com.amazonaws.mobileconnectors.dynamodbv2.document.UpdateItemOperationConfig;
-import com.amazonaws.mobileconnectors.dynamodbv2.document.internal.KeyDescription;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.Table;
-import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.Document;
-import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.Primitive;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.ReturnValue;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import com.amazonaws.services.dynamodbv2.model.ScanResult;
+import com.example.gatekeeperapp.helpers.LogItem;
 
+import org.joda.time.DateTime;
+
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -64,9 +71,13 @@ public class DatabaseAccess {
      */
     private static volatile DatabaseAccess instance;
 
-     ;
+
+    public ArrayList<LogItem> DBlogs;
+
+
     /**
      * Creates a new DatabaseAccess instance.
+     *
      * @param context the calling context
      */
     private DatabaseAccess(Context context) {
@@ -88,6 +99,7 @@ public class DatabaseAccess {
         dbTable = Table.loadTable(dbClient, DYNAMODB_TABLE);
 
         Log.d("DynamoDB_fail_test", "yes");
+        init_database();
 
     }
 
@@ -105,71 +117,116 @@ public class DatabaseAccess {
         return instance;
     }
 
-    /**
-     * create a new alarm in the database
 
-     */
-    public void create() {
-
-
-        Document d= new Document();
-        d.put("sample_time", 4848);
-        d.put("device_data",111);
-        dbTable.putItem(d);
-
-
-
-
+    private void init_database() {
+        // Initialize the AWS Cognito credentials provider
+        credentialsProvider = new CognitoCachingCredentialsProvider(
+                context, // context
+                COGNITO_POOL_ID, // Identity Pool ID
+                COGNITO_REGION // Region
+        );
     }
 
-    /**
-     * Update an existing memo in the database
-     * @param memo the memo to save
-     */
-    public void update(Document memo) {
-        Document document = dbTable.updateItem(memo, new UpdateItemOperationConfig().withReturnValues(ReturnValue.ALL_NEW));
-    }
 
     /**
-     * Delete an existing memo in the database
-     * @param memo the memo to delete
-     */
-    public void delete(Document memo) {
-        dbTable.deleteItem(memo.get("userId").asPrimitive(), memo.get("noteId").asPrimitive());
-    }
-
-    /**
-     * Retrieve a memo by noteId from the database
-     * @param noteId the ID of the note
-     * @return the related document
-     */
-    public Document getMemoById(String noteId) {
-        return dbTable.getItem(new Primitive(credentialsProvider.getCachedIdentityId()), new Primitive(noteId));
-    }
-
-    /**
-     * Retrieve all the alarms from the database
-     * @return the list of alarms
+     * Retrieve all the data from the database
+     *
+     * @return the list of detected
      */
 
-    public Map<String, KeyDescription> getAllMemos() {
+    public ArrayList<LogItem> getAllLogs() {
 
-        Map<String, KeyDescription> fml = dbTable.getKeys();
+        long currentTimestamp = System.currentTimeMillis() / 1000L;
 
-        create();
-        ScanRequest scanRequest = new ScanRequest().withTableName(DYNAMODB_TABLE);
+        // fetch only rows with "trigger" value
+        Map<String, AttributeValue> innerExpresssion =
+                new HashMap<String, AttributeValue>();
+        innerExpresssion.put("message", new AttributeValue().withS("trigger"));
+
+        Map<String, AttributeValue> expressionAttributeValues =
+                new HashMap<String, AttributeValue>();
+        expressionAttributeValues.put(":val_msg", new AttributeValue().withM(innerExpresssion));
+
+
+        ScanRequest scanRequest = new ScanRequest().withTableName(DYNAMODB_TABLE)
+                .withExpressionAttributeValues(expressionAttributeValues)
+                .withFilterExpression("message = :val_msg")
+                .withExpressionAttributeValues(expressionAttributeValues)
+                .withLimit(30);
         ScanResult result = getDbClient().scan(scanRequest);
 
+        DBlogs = new ArrayList<LogItem>();
+        LogItem tmpLogItem;
+        Long sampleTime;
 
-        for (Map<String, AttributeValue> item : result.getItems()){
-            Log.d("Items_in_dbTable " , item.toString());
+        for (Map<String, AttributeValue> item : result.getItems()) {
+            Log.d("bbbbbbbb", "bbbbbbbbb");
+            sampleTime = Long.valueOf(item.get("sample_time").getN());
+            Timestamp timestamp = new Timestamp(sampleTime);
+            Date date = new Date(timestamp.getTime());
+            DateFormat f = new SimpleDateFormat("dd-MM-yyyy");
+            DateFormat f1 = new SimpleDateFormat("hh:mm:ss");
+            String dateTxt = f.format(date);
+            String timeTxt = f1.format(date);
+
+            //sort po datumu -> sort po vremenu
+            tmpLogItem = new LogItem(dateTxt, timeTxt, timestamp);
+
+            DBlogs.add(tmpLogItem);
+        }
+
+        Collections.sort(DBlogs, new Comparator<LogItem>() {
+            @Override
+            public int compare(LogItem o1, LogItem o2) {
+                return o2.getTimestamp().compareTo(o1.getTimestamp());
+            }
+        });
+
+        return DBlogs;
+    }
+
+
+    public Integer getNumberMovements() {
+
+        Integer counter = 0;
+        // fetch only rows with "trigger" value
+        Map<String, AttributeValue> innerExpresssion =
+                new HashMap<String, AttributeValue>();
+        innerExpresssion.put("message", new AttributeValue().withS("trigger"));
+
+        Map<String, AttributeValue> expressionAttributeValues =
+                new HashMap<String, AttributeValue>();
+        expressionAttributeValues.put(":val_msg", new AttributeValue().withM(innerExpresssion));
+
+
+        ScanRequest scanRequest = new ScanRequest().withTableName(DYNAMODB_TABLE)
+                .withExpressionAttributeValues(expressionAttributeValues)
+                .withFilterExpression("message = :val_msg")
+                .withExpressionAttributeValues(expressionAttributeValues);
+        ScanResult result = getDbClient().scan(scanRequest);
+
+        DBlogs = new ArrayList<LogItem>();
+        LogItem tmpLogItem;
+        Long sampleTime;
+
+        for (Map<String, AttributeValue> item : result.getItems()) {
+            sampleTime = Long.valueOf(item.get("sample_time").getN());
+            Timestamp timestamp = new Timestamp(sampleTime);
+            Date date = new Date(timestamp.getTime());
+            if (checkDayBefore24(date)) {
+                counter++;
+
+            }
+
         }
 
 
-
-        return fml;
+        return counter;
     }
 
-
-
+    public boolean checkDayBefore24(Date date) {
+        DateTime dateTime = new DateTime(date); // Convert java.util.Date to Joda-Time DateTime.
+        return dateTime.isBefore(DateTime.now().minusDays(1));
+    }
 }
+

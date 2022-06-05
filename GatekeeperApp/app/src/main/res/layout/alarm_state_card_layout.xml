@@ -6,7 +6,7 @@
     android:layout_centerInParent="true">
 
     <ImageView
-        android:id="@+id/icon"
+        android:id="@+id/icon_alarm"
         android:layout_marginTop="20dp"
         android:layout_marginStart="10dp"
         android:layout_width="wrap_content"
@@ -14,14 +14,14 @@
         android:src="@drawable/ic_alarm_icon_50" />
 
     <TextView
-        android:id="@+id/card_text"
+        android:id="@+id/alarm_text"
         android:layout_width="wrap_content"
         android:layout_marginTop="40dp"
         android:textSize="14sp"
         android:textStyle="bold"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
-        android:layout_toEndOf="@+id/icon"
+        android:layout_toEndOf="@+id/icon_alarm"
         android:text="ALARM STATE:" />
 
 
@@ -30,8 +30,8 @@
         app:switchMinWidth="30dp"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/card_text"
-        android:layout_alignLeft="@+id/card_text"
+        android:layout_below="@+id/alarm_text"
+        android:layout_alignStart="@+id/alarm_text"
         android:layout_marginTop="10dp"
         android:textSize="20dp"
         android:textStyle="bold"

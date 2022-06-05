@@ -4,6 +4,8 @@
     package="com.example.gatekeeperapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission." />
 
     <application
         android:allowBackup="true"
@@ -16,7 +18,13 @@
         android:theme="@style/Theme.GatekeeperApp"
         tools:targetApi="31">
         <activity
-            android:name=".ui.login.LoginActivity"
+            android:name=".SettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FullScreenAlert"
+            android:exported="false" />
+        <activity
+            android:name=".LogsLookupActivity"
             android:exported="false"
             android:label="@string/title_activity_login" />
         <activity
@@ -29,6 +37,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

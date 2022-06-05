@@ -43,7 +43,7 @@
 
 
     <TextView
-        android:id="@+id/link_logs_full"
+        android:id="@+id/link_settings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/static_settings_txt"
@@ -55,7 +55,8 @@
         android:textSize="15dp"
         android:clickable="true"
         android:textStyle="bold"
-        app:switchMinWidth="30dp" />
+        app:switchMinWidth="30dp"
+        android:focusable="true" />
 
 
 </RelativeLayout>

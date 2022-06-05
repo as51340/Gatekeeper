@@ -20,7 +20,7 @@
         android:layout_marginStart="2dp"
         android:layout_marginTop="40dp"
         android:layout_toEndOf="@+id/icon"
-        android:text="LOGS"
+        android:text="LOGS  (last 24h)"
         android:textSize="14sp"
         android:textStyle="bold" />
 
@@ -46,34 +46,6 @@
         android:layout_alignBottom="@+id/static_logs_detected"
         android:layout_alignBaseline="@+id/static_logs_detected"
         android:layout_toRightOf="@+id/static_logs_detected"
-        android:text="15"
-        android:textColor="@color/adriatic_blue"
-        android:textSize="18dp"
-        android:textStyle="bold"
-        app:switchMinWidth="30dp" />
-
-    <TextView
-        android:id="@+id/static_logs_alarm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/static_logs_detected"
-        android:layout_alignLeft="@+id/icon"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="15dp"
-        android:text="Alarms triggered: "
-        android:textColor="@color/gray"
-        android:textSize="15dp"
-        android:textStyle="bold"
-        app:switchMinWidth="30dp" />
-
-    <TextView
-        android:id="@+id/logs_alarm_num"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/static_logs_detected"
-        android:layout_toRightOf="@+id/static_logs_alarm"
-        android:layout_alignBaseline="@id/static_logs_alarm"
-        android:layout_marginTop="10dp"
         android:text="0"
         android:textColor="@color/adriatic_blue"
         android:textSize="18dp"
@@ -82,11 +54,13 @@
 
 
 
+
+
     <TextView
         android:id="@+id/link_logs_full"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/static_logs_alarm"
+        android:layout_below="@+id/logs_detected_num"
         android:layout_alignLeft="@+id/icon"
         android:layout_marginStart="10dp"
         android:layout_marginTop="15dp"

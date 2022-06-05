@@ -1,11 +1,17 @@
 package com.example.gatekeeperapp;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
-import com.amazonaws.mobileconnectors.dynamodbv2.document.internal.KeyDescription;
 import com.amazonaws.mobileconnectors.iot.AWSIotKeystoreHelper;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttClientStatusCallback;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttManager;
@@ -20,27 +26,43 @@ import com.amazonaws.services.iot.model.CreateKeysAndCertificateRequest;
 import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
 import com.example.gatekeeperapp.database.DatabaseAccess;
 import com.example.gatekeeperapp.databinding.ActivityMainBinding;
+import com.example.gatekeeperapp.helpers.LogItem;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.UnsupportedEncodingException;
 import java.security.KeyStore;
-import java.util.Map;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = MainActivity.class.getCanonicalName();
+    private static final Integer ALARM_CHANNEL_ID = 5;
     //private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
 
@@ -66,11 +88,21 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEYSTORE_PASSWORD = "password";
     // Certificate and key aliases in the KeyStore
     private static final String CERTIFICATE_ID = "default";
+    // message to be sent to actuator when user shuts down SCREAMING alarm
+    private static final String ALARM_DOWN = "{ \"data\": \"acknowledge\"} ";
+    // message to be sent to actuator when user shuts down SCREAMING alarm
+    private static final String ALARM_UP = "{ \"data\": \"trigger\"} ";
+    // message to be sent to actuator when user TURNS OFF  alarm
+    private static final String ALARM_OFF = "{ \"mode\": \"disable\"} ";
+    // message to be sent to actuator when user TURNS ON  alarm
+    private static final String ALARM_ON = "{ \"mode\": \"enable\"} ";
 
 
     AWSIotClient mIotAndroidClient;
     AWSIotMqttManager mqttManager;
 
+    String ALARM_STATE;
+    boolean ALARM_STATE_ON = false;
 
     String clientId;
     String topicData;
@@ -78,6 +110,11 @@ public class MainActivity extends AppCompatActivity {
     String keystorePath;
     String keystoreName;
     String keystorePassword;
+    String sensorReadings;
+    Integer NUMDETECTED = -1;
+
+    TextView numDetectedTV;
+
 
     KeyStore clientKeyStore = null;
     String certificateId;
@@ -88,17 +125,44 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
-
-        clientId =  "MobApp";
+        clientId = "MobApp";
         topicData = "actuator/esp32/data";
         topicMode = "actuator/esp32/mode";
+        sensorReadings = "sensor/esp32";
+        Log.d("dora","dora");
+        Intent current = getIntent();
+        boolean silenceAlarm = current.getBooleanExtra("silenceAlarm",false);
+        if(silenceAlarm){
+            publish(topicData,ALARM_DOWN);
+        }
 
-
-        init_database();
+        //aws stuff
         init_publish_subscribe();
         connectIoT();
+        //app stuff
+        createNotificationChannel();
+        try {
+            ALARM_STATE_ON = checkAlarm();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            Log.d("ALARM", String.valueOf(checkAlarm()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         initCards();
 
+
+        Log.i("ALARM_STATE", ALARM_STATE + String.valueOf(ALARM_STATE_ON));
+
+        long currentTimestamp = System.currentTimeMillis() / 1000L;
+
+        Log.d("dora",getTimeAgoFormat(currentTimestamp));
+    }
+    public static String getTimeAgoFormat(long timestamp) {
+        return android.text.format.DateUtils.getRelativeTimeSpanString(timestamp).toString();
     }
 
 
@@ -106,11 +170,11 @@ public class MainActivity extends AppCompatActivity {
     private final Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            Log.d(LOG_TAG,"inside HandlerClass instance of mHandler...");
+            Log.d(LOG_TAG, "inside HandlerClass instance of mHandler...");
             Object obj = msg.obj;
             int arg1 = msg.arg1;
-            boolean flag = (arg1==0);
-            Log.d(LOG_TAG,"Successful?: "+  flag);
+            boolean flag = (arg1 == 0);
+            Log.d(LOG_TAG, "Successful?: " + flag);
             super.handleMessage(msg);
         }
     };
@@ -124,34 +188,28 @@ public class MainActivity extends AppCompatActivity {
          */
         @Override
         public void statusChanged(MessageDeliveryStatus status, Object userData) {
-            Log.d(LOG_TAG,"inside statusChanged method in DeliveryCallback...");
+            Log.d(LOG_TAG, "inside statusChanged method in DeliveryCallback...");
             Message msg = Message.obtain();
             msg.arg1 = (status == MessageDeliveryStatus.Success) ? 0 : 1;
             msg.obj = (StringBuffer) userData;
             mHandler.sendMessage(msg);
             if (status == MessageDeliveryStatus.Fail) {
-                Log.d(LOG_TAG,"Delivery Failed");
+                Log.d(LOG_TAG, "Delivery Failed");
                 return;
             }
-            Log.d(LOG_TAG,"Delivery Success");
+            Log.d(LOG_TAG, "Delivery Success");
         }
     }
-    private void publish(String topic, String msg){
-        Log.d(LOG_TAG, "*********************************************************8");
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("data",1);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
-        Log.d(LOG_TAG, "publishing to topic: " + topic + "msg: "+ jsonObject.toString());
+    private void publish(String topic, String msg) {
+        Log.d(LOG_TAG, "*********************************************************8");
+        Log.d(LOG_TAG, "publishing to topic: " + topic + " msg: " + msg);
         try {
             DeliveryCallback callback = new DeliveryCallback();
-            StringBuffer stringBuffer= new StringBuffer();
+            StringBuffer stringBuffer = new StringBuffer();
             stringBuffer.append(" success ");
             //mqttManager.publishData(jsonObject.toString().getBytes(StandardCharsets.UTF_8), topic, AWSIotMqttQos.QOS0,callback,stringBuffer);
-            mqttManager.publishString(msg, topicData, AWSIotMqttQos.QOS1,callback,stringBuffer);
+            mqttManager.publishString(msg, topicData, AWSIotMqttQos.QOS1, callback, stringBuffer);
         } catch (Exception e) {
             Log.d(LOG_TAG, "Publish error.", e);
         }
@@ -161,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
     private void subscribe(String topic) {
 
         Log.d(LOG_TAG, " subscribing to topic: " + topic);
+
 
         try {
             mqttManager.subscribeToTopic(topic, AWSIotMqttQos.QOS0,
@@ -172,13 +231,25 @@ public class MainActivity extends AppCompatActivity {
                                 public void run() {
                                     try {
                                         String message = new String(data, "UTF-8");
-                                        Log.d(LOG_TAG, "Message arrived:");
-                                        Log.d(LOG_TAG, "   Topic: " + topic);
-                                        Log.d(LOG_TAG, " Message: " + message);
+                                        Log.i(LOG_TAG, "Message arrived:");
+                                        Log.i(LOG_TAG, "   Topic: " + topic);
+                                        Log.i(LOG_TAG, " Message: " + message);
+
+                                        //check again if alarm is on
+                                        try {
+                                            ALARM_STATE_ON = checkAlarm();
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
+                                        //Detection
+                                        if (ALARM_STATE_ON) {
+                                            publish(topicData,ALARM_UP); //trigger alarm
+                                            runAlarmNotify();
+                                        }
 
 
                                     } catch (UnsupportedEncodingException e) {
-                                        Log.d(LOG_TAG, "Message encoding error.", e);
+                                        Log.e(LOG_TAG, "Message encoding error.", e);
                                     }
                                 }
                             });
@@ -186,7 +257,7 @@ public class MainActivity extends AppCompatActivity {
 
                     });
         } catch (Exception e) {
-            Log.d(LOG_TAG, "Subscription error.", e);
+            Log.e(LOG_TAG, "Subscription error.", e);
         }
 
     }
@@ -202,11 +273,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (status == AWSIotMqttClientStatusCallback.AWSIotMqttClientStatus.Connected) {
-                            System.out.println("Hi hih ihiiihih");
                             Log.d("d_tag", "Connected");
-                            subscribe(topicData);
-                            String messageToSend = "{ \"message\": \"shitHappens\"} ";;
-                            publish(topicData, messageToSend);
+                            subscribe(sensorReadings);
+
                         } else if (status == AWSIotMqttClientStatusCallback.AWSIotMqttClientStatus.Reconnecting) {
                             if (throwable != null) {
                                 Log.d(d_tag, "Connection error.", throwable);
@@ -217,7 +286,6 @@ public class MainActivity extends AppCompatActivity {
                             }
                         } else {
                             Log.d("d_tag", "Disconnected");
-                            ;
 
                         }
                     }
@@ -228,14 +296,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void init_database() {
-        // Initialize the AWS Cognito credentials provider
-        credentialsProvider = new CognitoCachingCredentialsProvider(
-                getApplicationContext(), // context
-                COGNITO_POOL_ID, // Identity Pool ID
-                MY_REGION // Region
-        );
-    }
 
     private void init_publish_subscribe() {
         Region region = Region.getRegion(MY_REGION);
@@ -247,7 +307,6 @@ public class MainActivity extends AppCompatActivity {
         // Set keepalive to 10 seconds.  Will recognize disconnects more quickly but will also send
         // MQTT pings every 10 seconds.
         mqttManager.setKeepAlive(20);
-
 
 
         // IoT Client (for creation of certificate if needed)
@@ -347,19 +406,88 @@ public class MainActivity extends AppCompatActivity {
         CardView alarmCard = findViewById(R.id.alarm_state_card);
         View child1 = LayoutInflater.from(this).inflate(R.layout.alarm_state_card_layout, alarmCard, false);
         alarmCard.addView(child1);
-        alarmCard.setOnClickListener(v -> {
-            Log.d("MainActivity", String.valueOf(v.getId()==R.id.alarm_state_card));
+        SwitchCompat alarmSwitch;
+        ImageView bellImg;
+
+        alarmSwitch = child1.findViewById(R.id.alarmSwitch);
+        bellImg = child1.findViewById(R.id.icon_alarm);
+        bellImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                runAlarmNotify();
+            }
         });
+        alarmSwitch.setChecked(ALARM_STATE_ON);
+        if (ALARM_STATE_ON) {
+            alarmSwitch.setText("ON");
+            alarmSwitch.setTextColor(Color.GREEN);
+        } else {
+            alarmSwitch.setText("OFF");
+            alarmSwitch.setTextColor(Color.RED);
+
+        }
+        alarmSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    //user wants alarm on
+                    publish(topicData, ALARM_ON);
+                    buttonView.setText("ON");
+                    buttonView.setTextColor(Color.GREEN);
+
+                    SharedPreferences sharedPref = getSharedPreferences("GatekeeperData", 0);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString("alarmState", "ON");
+                    editor.commit();
+
+
+                } else {
+                    publish(topicData, ALARM_OFF);
+                    buttonView.setText("OFF");
+                    buttonView.setTextColor(Color.RED);
+
+                    SharedPreferences sharedPref = getSharedPreferences("GatekeeperData", 0);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString("alarmState", "OFF");
+                    editor.commit();
+
+                }
+            }
+        });
+
+        //TODO
+        // numDetected.setText(NUMDETECTED);
+
+
+        CardView logsCard = findViewById(R.id.logs_card);
+        View logChild = LayoutInflater.from(this).inflate(R.layout.logs_card_layout, logsCard, false);
+        logsCard.addView(logChild);
+        numDetectedTV = logChild.findViewById(R.id.logs_detected_num);
+
+        logChild.findViewById(R.id.link_logs_full).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, LogsLookupActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
         CardView settingsCard = findViewById(R.id.alaram_settings_card);
         View child2 = LayoutInflater.from(this).inflate(R.layout.settings_card_layout, settingsCard, false);
         settingsCard.addView(child2);
 
 
+        TextView gotosettings = child2.findViewById(R.id.link_settings);
+        gotosettings.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("UnspecifiedImmutableFlag")
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
 
-        CardView logsCard = findViewById(R.id.logs_card);
-        View d = LayoutInflater.from(this).inflate(R.layout.logs_card_layout, logsCard, false);
-        logsCard.addView(d);
 
         CardView websiteCard = findViewById(R.id.website_card);
         View c = LayoutInflater.from(this).inflate(R.layout.website_card_layout, websiteCard, false);
@@ -368,39 +496,117 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void runAlarmNotify() {
 
-    //TODO: smjesti donji kod u prikladni file
+        Intent fullScreenIntent = new Intent(getApplicationContext(), FullScreenAlert.class);
+        PendingIntent fullScreenPendingIntent;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            fullScreenPendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
+                    fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+        } else {
 
-    private class GetAllItemsAsyncTask extends AsyncTask<Void, Void, Map<String, KeyDescription>> {
+            fullScreenPendingIntent = PendingIntent.getActivity(getApplicationContext(), 0,
+                    fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), String.valueOf(ALARM_CHANNEL_ID))
+                .setSmallIcon(R.drawable.ic_alarm_icon_50)
+                .setContentTitle("ALARM TRIGGERED")
+                .setContentText("Movement is detected on position \"Glavni ulaz\"!")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setFullScreenIntent(fullScreenPendingIntent, true);
+
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
+        notificationManager.notify(ALARM_CHANNEL_ID, builder.build());
+
+
+    }
+
+
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "GatekeeperAlar,";
+            String description = "GatekeeperAlarm";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel(String.valueOf(ALARM_CHANNEL_ID), name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+
+    private Boolean checkAlarm() throws ParseException {
+
+
+        SharedPreferences sharedPref = getSharedPreferences("GatekeeperData", 0);
+        String fromTime = sharedPref.getString("fromTime", "");
+        String toTime = sharedPref.getString("toTime", "");
+        //ALARM STATE
+        ALARM_STATE = sharedPref.getString("alarmState", "ON");
+        if (ALARM_STATE.equals("ON")) {
+            ALARM_STATE_ON = true;
+        } else return false;
+
+
+        // check time
+        Long dateNow = System.currentTimeMillis();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        String timeNow = dateFormat.format(dateNow);
+
+        return isWithingSH(fromTime, timeNow, toTime);
+    }
+
+    public static boolean isWithingSH(String startSH, String now, String stopSH) {
+        try {
+            SimpleDateFormat parser = new SimpleDateFormat("HH:mm", Locale.GERMAN);
+            Date startTime = parser.parse(startSH);
+            Date endTime = parser.parse(stopSH);
+            Date nowTime = parser.parse(now);
+
+            if (startTime.after(endTime)) {
+                return endTime.after(nowTime);
+            } else {
+                return startTime.before(nowTime) && endTime.after(nowTime);
+            }
+        } catch (java.text.ParseException e) {
+            return false;
+        }
+    }
+
+
+
+    private class GetAllItemsAsyncTask extends AsyncTask<Void, Void, Integer> {
         @Override
-        protected Map<String, KeyDescription> doInBackground(Void... params) {
-            Log.d("DynamoDB_fail_test", "access");
-            DatabaseAccess databaseAccess = DatabaseAccess.getInstance(MainActivity.this);
-
-            //  Log.d("All_memos", databaseAccess.getAllMemos().toString());
-
-            return databaseAccess.getAllMemos();
+        protected Integer doInBackground(Void... params) {
+            DatabaseAccess databaseAccess = DatabaseAccess.getInstance(getApplicationContext());
+            return databaseAccess.getNumberMovements();
 
         }
 
         @Override
-        protected void onPostExecute(Map<String, KeyDescription> documents) {
-            if (documents != null) {
-                // populateMemoList(documents);
-                Log.d("post", "pporukaZaPost");
+        protected void onPostExecute(Integer res) {
+            if (res != null) {
+                NUMDETECTED=res;
+                numDetectedTV.setText(String.valueOf(NUMDETECTED));
+                Log.d("MainActivity-Logs", "Retrieval success!");
             }
         }
     }
 
-    /**
-     * Lifecycle method - called when the app is resumed (including the first-time start)
-     */
+
     @Override
     protected void onResume() {
         super.onResume();
         GetAllItemsAsyncTask task = new GetAllItemsAsyncTask();
         task.execute();
-        Log.d("jj", "hdi");
     }
+
 
 }

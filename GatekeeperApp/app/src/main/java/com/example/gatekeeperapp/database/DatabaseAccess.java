@@ -80,7 +80,7 @@ public class DatabaseAccess {
      *
      * @param context the calling context
      */
-    private DatabaseAccess(Context context) {
+    public DatabaseAccess(Context context) {
         this.context = context;
 
         // Create a new credentials provider
@@ -99,7 +99,6 @@ public class DatabaseAccess {
         dbTable = Table.loadTable(dbClient, DYNAMODB_TABLE);
 
         Log.d("DynamoDB_fail_test", "yes");
-        init_database();
 
     }
 
@@ -118,7 +117,7 @@ public class DatabaseAccess {
     }
 
 
-    private void init_database() {
+    public void init_database() {
         // Initialize the AWS Cognito credentials provider
         credentialsProvider = new CognitoCachingCredentialsProvider(
                 context, // context

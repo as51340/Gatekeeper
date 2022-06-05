@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
     String ALARM_STATE;
     boolean ALARM_STATE_ON = false;
 
+
     String clientId;
     String topicData;
     String topicMode;
@@ -129,7 +130,6 @@ public class MainActivity extends AppCompatActivity {
         topicData = "actuator/esp32/data";
         topicMode = "actuator/esp32/mode";
         sensorReadings = "sensor/esp32";
-        Log.d("dora","dora");
         Intent current = getIntent();
         boolean silenceAlarm = current.getBooleanExtra("silenceAlarm",false);
         if(silenceAlarm){
@@ -137,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //aws stuff
+        init_database();
         init_publish_subscribe();
         connectIoT();
         //app stuff
@@ -157,12 +158,7 @@ public class MainActivity extends AppCompatActivity {
 
         Log.i("ALARM_STATE", ALARM_STATE + String.valueOf(ALARM_STATE_ON));
 
-        long currentTimestamp = System.currentTimeMillis() / 1000L;
 
-        Log.d("dora",getTimeAgoFormat(currentTimestamp));
-    }
-    public static String getTimeAgoFormat(long timestamp) {
-        return android.text.format.DateUtils.getRelativeTimeSpanString(timestamp).toString();
     }
 
 
@@ -208,8 +204,7 @@ public class MainActivity extends AppCompatActivity {
             DeliveryCallback callback = new DeliveryCallback();
             StringBuffer stringBuffer = new StringBuffer();
             stringBuffer.append(" success ");
-            //mqttManager.publishData(jsonObject.toString().getBytes(StandardCharsets.UTF_8), topic, AWSIotMqttQos.QOS0,callback,stringBuffer);
-            mqttManager.publishString(msg, topicData, AWSIotMqttQos.QOS1, callback, stringBuffer);
+            mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS1, callback, stringBuffer);
         } catch (Exception e) {
             Log.d(LOG_TAG, "Publish error.", e);
         }
@@ -231,9 +226,9 @@ public class MainActivity extends AppCompatActivity {
                                 public void run() {
                                     try {
                                         String message = new String(data, "UTF-8");
-                                        Log.i(LOG_TAG, "Message arrived:");
-                                        Log.i(LOG_TAG, "   Topic: " + topic);
-                                        Log.i(LOG_TAG, " Message: " + message);
+                                        Log.d(LOG_TAG, "Message arrived:");
+                                        Log.d(LOG_TAG, "   Topic: " + topic);
+                                        Log.d(LOG_TAG, " Message: " + message);
 
                                         //check again if alarm is on
                                         try {
@@ -260,6 +255,14 @@ public class MainActivity extends AppCompatActivity {
             Log.e(LOG_TAG, "Subscription error.", e);
         }
 
+    }
+     void init_database() {
+        // Initialize the AWS Cognito credentials provider
+        credentialsProvider = new CognitoCachingCredentialsProvider(
+                getApplicationContext(), // context
+                COGNITO_POOL_ID, // Identity Pool ID
+                MY_REGION // Region
+        );
     }
 
     private void connectIoT() {

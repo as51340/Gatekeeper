@@ -42,6 +42,7 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -106,8 +107,8 @@ public class MainActivity extends AppCompatActivity {
 
     String ALARM_STATE;
     boolean ALARM_STATE_ON = false;
-    boolean isFirst= false;
 
+    ArrayList<LogItem> logs;
 
     String clientId;
     String topicData;
@@ -117,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
     String keystorePassword;
     String sensorReadings;
     Integer NUMDETECTED = -1;
-    boolean MUST_PUBLISH = false; //if notification is triggered, first initialise (connect) then publish
+    boolean PUBLISH_ACK = false; //if notification is triggered, first initialise (connect) then publish
 
     TextView numDetectedTV;
 
@@ -159,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
         Intent current = getIntent();
         boolean silenceAlarm = current.getBooleanExtra("silenceAlarm", false);
         if (silenceAlarm) {
-            MUST_PUBLISH = true;
+            PUBLISH_ACK = true;
         }
         Log.i("ALARM_STATE", ALARM_STATE + String.valueOf(ALARM_STATE_ON));
 
@@ -255,9 +256,6 @@ public class MainActivity extends AppCompatActivity {
                                         if (ALARM_STATE_ON) {
                                             publish(topicData, ALARM_UP); //trigger alarm
                                             runAlarmNotify();
-
-
-                                            Log.d("AAAAAAAAAAAAA","AAAAAAAAAAAAAAAAAAAA");
                                         }
 
                                     } catch (UnsupportedEncodingException | JSONException e) {
@@ -296,9 +294,9 @@ public class MainActivity extends AppCompatActivity {
                         if (status == AWSIotMqttClientStatusCallback.AWSIotMqttClientStatus.Connected) {
                             Log.d(d_tag, "Connected");
                             subscribe(sensorReadings);
-                            if (MUST_PUBLISH) {
+                            if (PUBLISH_ACK) {
                                 publish(topicData,ALARM_DOWN);
-                                MUST_PUBLISH=false;
+                                PUBLISH_ACK=false;
 
                             }
 
@@ -481,8 +479,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //TODO
-        // numDetected.setText(NUMDETECTED);
+
 
 
         CardView logsCard = findViewById(R.id.logs_card);
@@ -494,6 +491,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, LogsLookupActivity.class);
+                intent.putParcelableArrayListExtra("logs",logs);
                 startActivity(intent);
             }
         });
@@ -518,6 +516,13 @@ public class MainActivity extends AppCompatActivity {
         CardView websiteCard = findViewById(R.id.website_card);
         View c = LayoutInflater.from(this).inflate(R.layout.website_card_layout, websiteCard, false);
         websiteCard.addView(c);
+        TextView websiteLink = c.findViewById(R.id.link_website);
+        websiteLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "Website is not deployed yet :)", Toast.LENGTH_SHORT).show();
+            }
+        });
 
 
     }
@@ -606,20 +611,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private class GetAllItemsAsyncTask extends AsyncTask<Void, Void, Integer> {
+    //TODO SADA
+
+    private class GetAllItemsAsyncTask extends AsyncTask<Void, Void,Object[]> {
         @Override
-        protected Integer doInBackground(Void... params) {
+        protected Object[] doInBackground(Void... params) {
             DatabaseAccess databaseAccess = DatabaseAccess.getInstance(getApplicationContext());
-            return databaseAccess.getNumberMovements();
+            return databaseAccess.getAllLogs();
 
         }
 
         @Override
-        protected void onPostExecute(Integer res) {
+        protected void onPostExecute(Object[] res) {
             if (res != null) {
-                NUMDETECTED = res;
+                logs=(ArrayList<LogItem>) res[0];
+                NUMDETECTED = (Integer) res[1];
                 numDetectedTV.setText(String.valueOf(NUMDETECTED));
-                Log.d("MainActivity-Logs", "Retrieval success!");
+
+                Log.d(LOG_TAG, "Logs: Retrieval success!");
             }
         }
     }

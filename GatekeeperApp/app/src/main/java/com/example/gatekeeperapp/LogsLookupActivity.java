@@ -3,6 +3,7 @@ package com.example.gatekeeperapp;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
@@ -38,6 +39,13 @@ public class LogsLookupActivity extends AppCompatActivity {
             }
         });
 
+
+
+        Bundle extras = getIntent().getExtras();
+
+        logs =  extras.getParcelableArrayList("logs");
+        populateList();
+
     }
 
 
@@ -45,7 +53,7 @@ public class LogsLookupActivity extends AppCompatActivity {
 
 
 
-    private void populateList(ArrayList<LogItem> logs) {
+    private void populateList() {
         ListAdapter numbersArrayAdapter = new LogsItemAdapter(this,logs );
 
         // create the instance of the ListView to set the numbersViewAdapter
@@ -56,34 +64,6 @@ public class LogsLookupActivity extends AppCompatActivity {
     }
 
 
-
-
-    private class GetAllItemsAsyncTask extends AsyncTask<Void, Void, ArrayList<LogItem>> {
-        @Override
-        protected ArrayList<LogItem> doInBackground(Void... params) {
-            DatabaseAccess databaseAccess = DatabaseAccess.getInstance(LogsLookupActivity.this);
-            return databaseAccess.getAllLogs();
-
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<LogItem> logs) {
-            if (logs != null) {
-                populateList(logs);
-                Log.d("MainActivity-Logs", "Retrieval success!");
-            }
-        }
-    }
-
-    /**
-     * Lifecycle method - called when the app is resumed (including the first-time start)
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-        GetAllItemsAsyncTask task = new GetAllItemsAsyncTask();
-        task.execute();
-    }
 
 }
 

@@ -73,6 +73,7 @@ public class DatabaseAccess {
 
 
     public ArrayList<LogItem> DBlogs;
+    private Object object;
 
 
     /**
@@ -133,60 +134,10 @@ public class DatabaseAccess {
      * @return the list of detected
      */
 
-    public ArrayList<LogItem> getAllLogs() {
-
-        long currentTimestamp = System.currentTimeMillis() / 1000L;
-
-        // fetch only rows with "trigger" value
-        Map<String, AttributeValue> innerExpresssion =
-                new HashMap<String, AttributeValue>();
-        innerExpresssion.put("value", new AttributeValue().withS("trigger"));
-
-        Map<String, AttributeValue> expressionAttributeValues =
-                new HashMap<String, AttributeValue>();
-        expressionAttributeValues.put(":val_msg", new AttributeValue().withM(innerExpresssion));
-
-
-        ScanRequest scanRequest = new ScanRequest().withTableName(DYNAMODB_TABLE)
-                .withExpressionAttributeValues(expressionAttributeValues)
-                .withFilterExpression("message = :val_msg")
-                .withExpressionAttributeValues(expressionAttributeValues)
-                .withLimit(30);
-        ScanResult result = getDbClient().scan(scanRequest);
-
-        DBlogs = new ArrayList<LogItem>();
-        LogItem tmpLogItem;
-        Long sampleTime;
-
-        for (Map<String, AttributeValue> item : result.getItems()) {
-            sampleTime = Long.valueOf(item.get("sample_time").getN());
-            Timestamp timestamp = new Timestamp(sampleTime);
-            Date date = new Date(timestamp.getTime());
-            DateFormat f = new SimpleDateFormat("dd-MM-yyyy");
-            DateFormat f1 = new SimpleDateFormat("hh:mm:ss");
-            String dateTxt = f.format(date);
-            String timeTxt = f1.format(date);
-
-            //sort po datumu -> sort po vremenu
-            tmpLogItem = new LogItem(dateTxt, timeTxt, timestamp);
-
-            DBlogs.add(tmpLogItem);
-        }
-
-        Collections.sort(DBlogs, new Comparator<LogItem>() {
-            @Override
-            public int compare(LogItem o1, LogItem o2) {
-                return o2.getTimestamp().compareTo(o1.getTimestamp());
-            }
-        });
-
-        return DBlogs;
-    }
-
-
-    public Integer getNumberMovements() {
+    public Object[] getAllLogs() {
 
         Integer counter = 0;
+
         // fetch only rows with "trigger" value
         Map<String, AttributeValue> innerExpresssion =
                 new HashMap<String, AttributeValue>();
@@ -200,7 +151,8 @@ public class DatabaseAccess {
         ScanRequest scanRequest = new ScanRequest().withTableName(DYNAMODB_TABLE)
                 .withExpressionAttributeValues(expressionAttributeValues)
                 .withFilterExpression("message = :val_msg")
-                .withExpressionAttributeValues(expressionAttributeValues);
+                .withExpressionAttributeValues(expressionAttributeValues)
+                .withLimit(50);
         ScanResult result = getDbClient().scan(scanRequest);
 
         DBlogs = new ArrayList<LogItem>();
@@ -214,10 +166,28 @@ public class DatabaseAccess {
             if (checkDayBefore24(date)) {
                 counter++;
             }
+
+            DateFormat f = new SimpleDateFormat("dd-MM-yyyy");
+            DateFormat f1 = new SimpleDateFormat("hh:mm:ss");
+            String dateTxt = f.format(date);
+            String timeTxt = f1.format(date);
+            tmpLogItem = new LogItem(dateTxt, timeTxt, timestamp);
+
+            DBlogs.add(tmpLogItem);
         }
 
-        return counter;
+        Collections.sort(DBlogs, new Comparator<LogItem>() {
+            @Override
+            public int compare(LogItem o1, LogItem o2) {
+                return o2.getTimestamp().compareTo(o1.getTimestamp());
+            }
+        });
+
+        return new Object[]{DBlogs, counter};
     }
+
+
+
 
     public boolean checkDayBefore24(Date date) {
         DateTime dateTime = new DateTime(date); // Convert java.util.Date to Joda-Time DateTime.

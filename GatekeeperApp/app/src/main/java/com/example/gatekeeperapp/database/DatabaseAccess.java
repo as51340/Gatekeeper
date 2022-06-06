@@ -163,7 +163,7 @@ public class DatabaseAccess {
             sampleTime = Long.valueOf(item.get("sample_time").getN());
             Timestamp timestamp = new Timestamp(sampleTime);
             Date date = new Date(timestamp.getTime());
-            if (checkDayBefore24(date)) {
+            if (!checkDayBefore24(date)) {
                 counter++;
             }
 

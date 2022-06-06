@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+
+    <TextView
+        android:id="@+id/date_static"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginStart="20dp"
+        android:text="Date: "
+        android:textColor="@android:color/black"
+        android:textSize="15sp"
+        tools:ignore="RtlHardcoded" />
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/date_static"
+        android:text="12.5.2022."
+        android:textColor="@android:color/black"
+        android:textSize="15sp"
+        android:layout_alignBaseline="@+id/date_static"
+        tools:ignore="RtlHardcoded" />
+
+    <TextView
+        android:id="@+id/time_static"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_toRightOf="@+id/date"
+        android:text="Time: "
+        android:textColor="@android:color/black"
+        android:textSize="15sp"
+        android:layout_alignBaseline="@+id/date_static"
+        tools:ignore="RtlHardcoded" />
+
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_alignBaseline="@+id/date_static"
+        android:layout_toEndOf="@id/time_static"
+        android:text="14:55:12"
+        android:textColor="@android:color/black"
+        android:textSize="15sp" />
+
+
+</RelativeLayout>

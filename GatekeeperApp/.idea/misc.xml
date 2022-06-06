@@ -28,6 +28,8 @@
         <entry key="..\:/Users/Dora/Desktop/iot/Gatekeeper/GatekeeperApp/app/src/main/res/layout/settings_card_layout.xml" value="0.21041666666666667" />
         <entry key="..\:/Users/Dora/Desktop/iot/Gatekeeper/GatekeeperApp/app/src/main/res/layout/website_card_layout.xml" value="0.1" />
         <entry key="..\:/Users/Dora/Desktop/iot/Gatekeeper/GatekeeperApp/app/src/main/res/menu/sens_position_menu.xml" value="0.23333333333333334" />
+        <entry key="app/src/main/res/drawable/ic_alarm_settings_50.xml" value="0.2475" />
+        <entry key="app/src/main/res/layout/activity_settings.xml" value="0.20380434782608695" />
       </map>
     </option>
   </component>

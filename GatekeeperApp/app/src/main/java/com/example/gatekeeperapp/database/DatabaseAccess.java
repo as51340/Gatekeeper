@@ -168,7 +168,7 @@ public class DatabaseAccess {
             }
 
             DateFormat f = new SimpleDateFormat("dd-MM-yyyy");
-            DateFormat f1 = new SimpleDateFormat("hh:mm:ss");
+            SimpleDateFormat f1 = new SimpleDateFormat("HH:mm:ss");
             String dateTxt = f.format(date);
             String timeTxt = f1.format(date);
             tmpLogItem = new LogItem(dateTxt, timeTxt, timestamp);

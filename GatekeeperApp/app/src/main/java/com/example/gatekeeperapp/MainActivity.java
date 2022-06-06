@@ -600,18 +600,16 @@ public class MainActivity extends AppCompatActivity {
             Date endTime = parser.parse(stopSH);
             Date nowTime = parser.parse(now);
 
-            if (startTime.after(endTime)) {
-                return endTime.after(nowTime);
-            } else {
+            if (startTime.before(endTime)) {
                 return startTime.before(nowTime) && endTime.after(nowTime);
+            } else {
+                return nowTime.after(startTime);
             }
         } catch (java.text.ParseException e) {
             return false;
         }
     }
 
-
-    //TODO SADA
 
     private class GetAllItemsAsyncTask extends AsyncTask<Void, Void,Object[]> {
         @Override

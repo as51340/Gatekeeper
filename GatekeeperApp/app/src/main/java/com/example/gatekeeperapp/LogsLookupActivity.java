@@ -39,16 +39,12 @@ public class LogsLookupActivity extends AppCompatActivity {
             }
         });
 
-
-
         Bundle extras = getIntent().getExtras();
 
         logs =  extras.getParcelableArrayList("logs");
         populateList();
 
     }
-
-
 
 
 

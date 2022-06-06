@@ -1,3 +1,7 @@
 *.pem
 *.crt
 *.key
+.idea
+tutorial
+install.cmd
+useful_commands.txt

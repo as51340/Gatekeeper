@@ -1,0 +1,49 @@
+.title {
+    font-size: 40px;
+    font-weight: bold;
+    font-style: italic;
+
+}
+
+.card{
+    font: inherit;
+    font-weight: bold;
+    text-align: center;
+
+
+}
+
+.card-wrapper {
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: unset;
+    height: 8rem;
+    border-top: 1px solid black;
+   border-width: thin;
+    background-color: white;
+    color: black;
+    border-radius: 12px;
+    align-items: center;
+    justify-content: center;
+}
+
+.alarm-wrapper{
+    margin-bottom: 5px;
+    width: 12rem;
+    height: 4rem;
+    color: black;
+
+    align-items: center;
+    justify-content: center;
+}
+
+.on{
+    font-size: 15px;
+    color: white;
+    background-color: green;
+}
+
+
+.time{
+    align-content: center;
+}

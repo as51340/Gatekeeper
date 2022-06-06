@@ -326,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
 
         // MQTT Client
         mqttManager = new AWSIotMqttManager(clientId, CUSTOMER_SPECIFIC_ENDPOINT);
-        mqttManager.setAutoReconnect(false);
+        mqttManager.setAutoReconnect(true);
 
         // Set keepalive to 10 seconds.  Will recognize disconnects more quickly but will also send
         // MQTT pings every 10 seconds.

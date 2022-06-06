@@ -106,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
     String ALARM_STATE;
     boolean ALARM_STATE_ON = false;
+    boolean isFirst= false;
 
 
     String clientId;
@@ -237,11 +238,11 @@ public class MainActivity extends AppCompatActivity {
                                         Log.d(LOG_TAG, "Message arrived:");
                                         Log.d(LOG_TAG, "   Topic: " + topic);
                                         Log.d(LOG_TAG, " Message: " + message);
+                                        Log.d(LOG_TAG, "IsConfirmation " + isConfirmation);
+
 
                                         // No need to do anything
                                         if(isConfirmation) return;
-
-
 
                                         //check again if alarm is on
                                         try {
@@ -254,8 +255,11 @@ public class MainActivity extends AppCompatActivity {
                                         if (ALARM_STATE_ON) {
                                             publish(topicData, ALARM_UP); //trigger alarm
                                             runAlarmNotify();
+
+
                                             Log.d("AAAAAAAAAAAAA","AAAAAAAAAAAAAAAAAAAA");
                                         }
+
                                     } catch (UnsupportedEncodingException | JSONException e) {
                                         Log.e(LOG_TAG, "Message encoding error.", e);
                                     }

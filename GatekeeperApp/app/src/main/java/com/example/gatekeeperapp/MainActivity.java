@@ -89,13 +89,13 @@ public class MainActivity extends AppCompatActivity {
     // Certificate and key aliases in the KeyStore
     private static final String CERTIFICATE_ID = "default";
     // message to be sent to actuator when user shuts down SCREAMING alarm
-    private static final String ALARM_DOWN = "{ \"data\": \"acknowledge\"} ";
+    private static final String ALARM_DOWN = "{ \"message\": \"acknowledge\"} ";
     // message to be sent to actuator when user shuts down SCREAMING alarm
-    private static final String ALARM_UP = "{ \"data\": \"trigger\"} ";
+    private static final String ALARM_UP = "{ \"message\": \"trigger\"} ";
     // message to be sent to actuator when user TURNS OFF  alarm
-    private static final String ALARM_OFF = "{ \"mode\": \"disable\"} ";
+    private static final String ALARM_OFF = "{ \"message\": \"disable\"} ";
     // message to be sent to actuator when user TURNS ON  alarm
-    private static final String ALARM_ON = "{ \"mode\": \"enable\"} ";
+    private static final String ALARM_ON = "{ \"message\": \"enable\"} ";
 
 
     AWSIotClient mIotAndroidClient;
@@ -234,6 +234,7 @@ public class MainActivity extends AppCompatActivity {
                                         //check again if alarm is on
                                         try {
                                             ALARM_STATE_ON = checkAlarm();
+                                            Log.d("ALARM_STATE", String.valueOf(ALARM_STATE_ON));
                                         } catch (ParseException e) {
                                             e.printStackTrace();
                                         }
@@ -241,6 +242,7 @@ public class MainActivity extends AppCompatActivity {
                                         if (ALARM_STATE_ON) {
                                             publish(topicData, ALARM_UP); //trigger alarm
                                             runAlarmNotify();
+                                            Log.d("AAAAAAAAAAAAA","AAAAAAAAAAAAAAAAAAAA");
                                         }
 
 
@@ -278,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (status == AWSIotMqttClientStatusCallback.AWSIotMqttClientStatus.Connected) {
-                            Log.d("d_tag", "Connected");
+                            Log.d(d_tag, "Connected");
                             subscribe(sensorReadings);
                             if (MUST_PUBLISH) {
                                 publish(topicData,ALARM_DOWN);
@@ -295,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
                                 Log.d(d_tag, "Connection error.", throwable);
                             }
                         } else {
-                            Log.d("d_tag", "Disconnected");
+                            Log.d(d_tag, "Disconnected");
 
                         }
                     }
@@ -316,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Set keepalive to 10 seconds.  Will recognize disconnects more quickly but will also send
         // MQTT pings every 10 seconds.
-        mqttManager.setKeepAlive(20);
+        mqttManager.setKeepAlive(30);
 
 
         // IoT Client (for creation of certificate if needed)
@@ -558,7 +560,7 @@ public class MainActivity extends AppCompatActivity {
         String fromTime = sharedPref.getString("fromTime", "");
         String toTime = sharedPref.getString("toTime", "");
         //ALARM STATE
-        ALARM_STATE = sharedPref.getString("alarmState", "ON");
+        ALARM_STATE = sharedPref.getString("alarmState", "OFF");
         if (ALARM_STATE.equals("ON")) {
             ALARM_STATE_ON = true;
         } else return false;

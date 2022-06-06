@@ -43,6 +43,9 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 import java.security.KeyStore;
 import java.sql.Time;
@@ -103,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
     String ALARM_STATE;
     boolean ALARM_STATE_ON = false;
+    boolean isFirst= false;
 
 
     String clientId;
@@ -230,6 +234,10 @@ public class MainActivity extends AppCompatActivity {
                                         Log.d(LOG_TAG, "Message arrived:");
                                         Log.d(LOG_TAG, "   Topic: " + topic);
                                         Log.d(LOG_TAG, " Message: " + message);
+                                        JSONObject obj = new JSONObject(message);
+
+
+                                        boolean flag = obj.has("message");
 
                                         //check again if alarm is on
                                         try {
@@ -239,14 +247,16 @@ public class MainActivity extends AppCompatActivity {
                                             e.printStackTrace();
                                         }
                                         //Detection
-                                        if (ALARM_STATE_ON) {
+                                        if (ALARM_STATE_ON && !flag) {
                                             publish(topicData, ALARM_UP); //trigger alarm
                                             runAlarmNotify();
+
+
                                             Log.d("AAAAAAAAAAAAA","AAAAAAAAAAAAAAAAAAAA");
                                         }
 
 
-                                    } catch (UnsupportedEncodingException e) {
+                                    } catch (UnsupportedEncodingException | JSONException e) {
                                         Log.e(LOG_TAG, "Message encoding error.", e);
                                     }
                                 }

@@ -15,13 +15,6 @@ import java.util.Objects;
 
 public class FullScreenAlert extends AppCompatActivity {
 
-    private static final String CHANNEL_ID = "5";
-    public static final String FULL_SCREEN_ACTION = "full_screen_action";
-    static final int NOTIFICATION_ID = 1;
-    private static final String LOG_TAG = FullScreenAlert.class.getCanonicalName();
-
-    // message to be sent to actuator when user shuts down SCREAMING alarm
-    private static final String ALARM_DOWN = "{ \"data\": \"acknowledge\"} ";
 
 
     @Override

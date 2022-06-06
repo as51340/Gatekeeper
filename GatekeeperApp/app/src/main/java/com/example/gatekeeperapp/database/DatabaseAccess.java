@@ -140,7 +140,7 @@ public class DatabaseAccess {
         // fetch only rows with "trigger" value
         Map<String, AttributeValue> innerExpresssion =
                 new HashMap<String, AttributeValue>();
-        innerExpresssion.put("message", new AttributeValue().withS("trigger"));
+        innerExpresssion.put("value", new AttributeValue().withS("trigger"));
 
         Map<String, AttributeValue> expressionAttributeValues =
                 new HashMap<String, AttributeValue>();
@@ -159,7 +159,6 @@ public class DatabaseAccess {
         Long sampleTime;
 
         for (Map<String, AttributeValue> item : result.getItems()) {
-            Log.d("bbbbbbbb", "bbbbbbbbb");
             sampleTime = Long.valueOf(item.get("sample_time").getN());
             Timestamp timestamp = new Timestamp(sampleTime);
             Date date = new Date(timestamp.getTime());
@@ -191,7 +190,7 @@ public class DatabaseAccess {
         // fetch only rows with "trigger" value
         Map<String, AttributeValue> innerExpresssion =
                 new HashMap<String, AttributeValue>();
-        innerExpresssion.put("message", new AttributeValue().withS("trigger"));
+        innerExpresssion.put("value", new AttributeValue().withS("trigger"));
 
         Map<String, AttributeValue> expressionAttributeValues =
                 new HashMap<String, AttributeValue>();
@@ -214,11 +213,8 @@ public class DatabaseAccess {
             Date date = new Date(timestamp.getTime());
             if (checkDayBefore24(date)) {
                 counter++;
-
             }
-
         }
-
 
         return counter;
     }

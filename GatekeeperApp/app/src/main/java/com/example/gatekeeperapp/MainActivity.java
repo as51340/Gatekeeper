@@ -43,6 +43,9 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 import java.security.KeyStore;
 import java.sql.Time;
@@ -218,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         try {
-            mqttManager.subscribeToTopic(topic, AWSIotMqttQos.QOS0,
+            mqttManager.subscribeToTopic(topic, AWSIotMqttQos.QOS1,
                     new AWSIotMqttNewMessageCallback() {
                         @Override
                         public void onMessageArrived(final String topic, final byte[] data) {
@@ -227,9 +230,18 @@ public class MainActivity extends AppCompatActivity {
                                 public void run() {
                                     try {
                                         String message = new String(data, "UTF-8");
+
+                                        JSONObject obj = new JSONObject(message);
+                                        boolean isConfirmation = obj.has("message");
+
                                         Log.d(LOG_TAG, "Message arrived:");
                                         Log.d(LOG_TAG, "   Topic: " + topic);
                                         Log.d(LOG_TAG, " Message: " + message);
+
+                                        // No need to do anything
+                                        if(isConfirmation) return;
+
+
 
                                         //check again if alarm is on
                                         try {
@@ -244,9 +256,7 @@ public class MainActivity extends AppCompatActivity {
                                             runAlarmNotify();
                                             Log.d("AAAAAAAAAAAAA","AAAAAAAAAAAAAAAAAAAA");
                                         }
-
-
-                                    } catch (UnsupportedEncodingException e) {
+                                    } catch (UnsupportedEncodingException | JSONException e) {
                                         Log.e(LOG_TAG, "Message encoding error.", e);
                                     }
                                 }

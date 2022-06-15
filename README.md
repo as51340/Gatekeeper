@@ -34,4 +34,4 @@ Voila!
 
 
 Sincerely, <br/>
-Gatekeeper team: **Leonarda Gjenero, Neda Kusurin, Maksimilijan Marosevic, Marija Papic, Andi Skrgat**
+Gatekeeper team: **Leonarda Gjenero, Neda Kusurin, Maksimilijan Marosevic, Marija Papic, Dora Pavelic, Andi Skrgat**
